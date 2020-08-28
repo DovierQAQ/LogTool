@@ -7,6 +7,72 @@
         mc:Ignorable="d"
         Title="GuoFan Log Tool" Height="850" Width="800">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="3" />
+            <RowDefinition Height="200" />
+        </Grid.RowDefinitions>
+        <DockPanel>
+            <DataGrid VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White"></DataGrid>
+        </DockPanel>
+        <GridSplitter Grid.Row="1" Height="3" HorizontalAlignment="Stretch"></GridSplitter>
+        <DockPanel Grid.Row="2">
+            <DockPanel>
+                <GroupBox Header="串口设置" DockPanel.Dock="Top" Width="150">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="3" HorizontalAlignment="Center">
+                            <TextBlock Text="串口号:" Height="16" Margin="0,4,0,0"/>
+                            <ComboBox Height="20" Width="76" Margin="5,0,0,0" ItemsSource="{Binding Ports}"></ComboBox>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="3" HorizontalAlignment="Center">
+                            <TextBlock Text="波特率:" Height="16" Margin="0,4,0,0"/>
+                            <ComboBox Height="20" Width="76" Margin="5,0,0,0" >
+                                <ComboBoxItem Content="1200"/>
+                                <ComboBoxItem Content="2400"/>
+                                <ComboBoxItem Content="4800"/>
+                                <ComboBoxItem Content="9600"/>
+                                <ComboBoxItem Content="14400"/>
+                                <ComboBoxItem Content="19200"/>
+                                <ComboBoxItem Content="38400"/>
+                                <ComboBoxItem Content="57600"/>
+                                <ComboBoxItem Content="115200"/>
+                                <ComboBoxItem Content="230400"/>
+                                <ComboBoxItem Content="380400"/>
+                                <ComboBoxItem Content="460800"/>
+                                <ComboBoxItem Content="921600"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <Button Content="打开串口" DockPanel.Dock="Top" Height="20" Margin="5"></Button>
+                    </DockPanel>
+                </GroupBox>
+                <GroupBox Header="发送设置">
+                    <StackPanel Margin="20, 0, 0, 0">
+                        <CheckBox Content="十六进制" Margin="2"></CheckBox>
+                        <CheckBox Content="\r\n结尾" Margin="2" IsChecked="True"></CheckBox>
+                        <CheckBox Content="清屏+发送" Margin="2"></CheckBox>
+                        <CheckBox Content="不显示发送内容" Margin="2"></CheckBox>
+                    </StackPanel>
+                </GroupBox>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Bottom" Height="20" Margin="2">
+                <Button Content="发送" DockPanel.Dock="Right" Margin="5, 0" Width="60"></Button>
+                <TextBox></TextBox>
+            </DockPanel>
+            <GroupBox Header="过滤条件">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Bottom" Height="25" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="添加过滤" Width="65" Margin="5, 2"></Button>
+                        <Button Content="显示过滤" Width="65" Margin="5, 2"></Button>
+                        <Button Content="清空过滤" Width="65" Margin="5, 2"></Button>
+                        <Button Content="清空显示" Width="65" Margin="5, 2"></Button>
+                        <Button Content="todo" Width="65" Margin="5, 2"></Button>
+                        <Button Content="todo" Width="65" Margin="5, 2"></Button>
+                        <Button Content="todo" Width="65" Margin="5, 2"></Button>
+                        <Button Content="todo" Width="65" Margin="5, 2"></Button>
+                    </StackPanel>
+                    <DataGrid VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White"></DataGrid>
+                </DockPanel>
+            </GroupBox>
+        </DockPanel>
     </Grid>
 </Window>
