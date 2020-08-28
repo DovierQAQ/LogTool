@@ -45,7 +45,7 @@ namespace LogTool
 
             cb_baud.SelectedIndex = 8;
 
-            log_add_line("Log Tool file begin");
+            log_add_info("Log Tool file begin");
             dg_log.DataContext = log_data;
 
             DispatcherTimer timer_show_log = new DispatcherTimer();
@@ -138,16 +138,11 @@ namespace LogTool
             log_data.Last().Text += recv_items[0];
             for (int i = 1; i < recv_items.Length; i++)
             {
-                log_data.Add(new LogItem() { Text = recv_items[i] });
+                log_data.Add(new LogItem(recv_items[i]));
             }
 
             dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
             log_data_mutex.ReleaseMutex();
-        }
-
-        class LogItem
-        {
-            public string Text { get; set; }
         }
 
         private void serial_send(byte[] data)
@@ -156,7 +151,7 @@ namespace LogTool
             {
                 if (!serial.send(data))
                 {
-                    log_add_line("发送失败");
+                    log_add_error("发送失败");
                 }
             }
             catch (Exception)
@@ -172,16 +167,31 @@ namespace LogTool
             log_data_mutex.ReleaseMutex();
         }
 
-        private void log_add_line(string s)
+        private void log_add_item(LogItem item)
         {
             log_data_mutex.WaitOne();
-            log_data.Add(new LogItem() { Text = s });
+            log_data.Add(item);
             log_data_mutex.ReleaseMutex();
+        }
+
+        private void log_add_error(string s)
+        {
+            log_add_item(new LogItem(s, Brushes.DarkRed, Brushes.White));
+        }
+
+        private void log_add_info(string s)
+        {
+            log_add_item(new LogItem(s, Brushes.DarkCyan, Brushes.White));
+        }
+
+        private void log_add_normal(string s)
+        {
+            log_add_item(new LogItem(s, Brushes.Black, Brushes.White));
         }
 
         private void serial_send_data(string data)
         {
-            List<byte> byte_data = new List<byte>();
+            List<byte> byte_data;
             if (cb_is_hex.IsChecked == true)
             {
                 try
@@ -190,7 +200,7 @@ namespace LogTool
                 }
                 catch (Exception)
                 {
-                    log_add_line("转换十六进制失败，发送失败");
+                    log_add_error("转换十六进制失败，发送失败");
                     return;
                 }
             }
@@ -206,11 +216,11 @@ namespace LogTool
             if (cb_is_clear.IsChecked == true)
             {
                 log_clear();
-                log_add_line("Log Tool file begin");
+                log_add_info("Log Tool file begin");
             }
             if (cb_is_not_print.IsChecked == false)
             {
-                log_add_line(data);
+                log_add_normal(data);
             }
 
             serial_send(byte_data.ToArray());
@@ -227,6 +237,27 @@ namespace LogTool
             {
                 serial_send_data(tb_send_data.Text);
             }
+        }
+    }
+
+    class LogItem
+    {
+        public string Text { get; set; }
+        public Brush Foreground { get; set; }
+        public Brush Background { get; set; }
+
+        public LogItem(string text)
+        {
+            Text = text;
+            Foreground = Brushes.Black;
+            Background = Brushes.White;
+        }
+
+        public LogItem(string text, Brush fg, Brush bg)
+        {
+            Text = text;
+            Foreground = fg;
+            Background = bg;
         }
     }
 }

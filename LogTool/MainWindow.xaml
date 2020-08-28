@@ -15,7 +15,13 @@
         <DockPanel>
             <DataGrid x:Name="dg_log" ItemsSource="{Binding}" IsReadOnly="True" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Text}" Width="800"></DataGridTextColumn>
+                    <DataGridTemplateColumn Width="800">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Text}" Foreground="{Binding Foreground}" Background="{Binding Background}"></TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
