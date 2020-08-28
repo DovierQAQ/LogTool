@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LogTool"
         mc:Ignorable="d"
-        Title="GuoFan Log Tool" Height="850" Width="800">
+        Title="GuoFan Log Tool" Height="850" Width="800" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -13,7 +13,11 @@
             <RowDefinition Height="200" />
         </Grid.RowDefinitions>
         <DockPanel>
-            <DataGrid VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White"></DataGrid>
+            <DataGrid x:Name="dg_log" ItemsSource="{Binding}" IsReadOnly="True" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Text}" Width="800"></DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
         </DockPanel>
         <GridSplitter Grid.Row="1" Height="3" HorizontalAlignment="Stretch"></GridSplitter>
         <DockPanel Grid.Row="2">
@@ -22,11 +26,11 @@
                     <DockPanel>
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="3" HorizontalAlignment="Center">
                             <TextBlock Text="串口号:" Height="16" Margin="0,4,0,0"/>
-                            <ComboBox Height="20" Width="76" Margin="5,0,0,0" ItemsSource="{Binding Ports}"></ComboBox>
+                            <ComboBox x:Name="cb_com" Height="20" Width="76" Margin="5,0,0,0" ItemsSource="{Binding Ports}"></ComboBox>
                         </StackPanel>
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="3" HorizontalAlignment="Center">
                             <TextBlock Text="波特率:" Height="16" Margin="0,4,0,0"/>
-                            <ComboBox Height="20" Width="76" Margin="5,0,0,0" >
+                            <ComboBox x:Name="cb_baud" Height="20" Width="76" Margin="5,0,0,0" IsEditable="True">
                                 <ComboBoxItem Content="1200"/>
                                 <ComboBoxItem Content="2400"/>
                                 <ComboBoxItem Content="4800"/>
@@ -42,7 +46,7 @@
                                 <ComboBoxItem Content="921600"/>
                             </ComboBox>
                         </StackPanel>
-                        <Button Content="打开串口" DockPanel.Dock="Top" Height="20" Margin="5"></Button>
+                        <Button x:Name="btn_com_open" Content="打开串口" DockPanel.Dock="Top" Height="20" Margin="5" Click="btn_com_open_Click"></Button>
                     </DockPanel>
                 </GroupBox>
                 <GroupBox Header="发送设置">
