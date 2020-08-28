@@ -1,6 +1,8 @@
-﻿using System;
+﻿using GFBytesUtils;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -30,8 +32,10 @@ namespace LogTool
 
         GFSerial serial = null;
         ObservableCollection<LogItem> log_data = new ObservableCollection<LogItem>();
+        Mutex log_data_mutex = new Mutex();
         Mutex buffer_mutex = new Mutex();
         string log_buffer = "";
+        string log_file_name = "";
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -41,11 +45,11 @@ namespace LogTool
 
             cb_baud.SelectedIndex = 8;
 
-            log_data.Add(new LogItem() { Text = "Log Tool file begin" });
+            log_add_line("Log Tool file begin");
             dg_log.DataContext = log_data;
 
             DispatcherTimer timer_show_log = new DispatcherTimer();
-            timer_show_log.Interval = TimeSpan.FromMilliseconds(20);
+            timer_show_log.Interval = TimeSpan.FromMilliseconds(10);
             timer_show_log.Tick += new EventHandler(log_show_callback);
             timer_show_log.Start();
         }
@@ -85,6 +89,12 @@ namespace LogTool
                 try
                 {
                     serial.open_serial(cb_com.Text, int.Parse(cb_baud.Text));
+                    log_file_name = "log/" + cb_com.Text + "_" + TimeUtils.GetFileTimeString() + ".log";
+                    if (!File.Exists(log_file_name))
+                    {
+                        FileStream fs = File.Create(log_file_name);
+                        fs.Close();
+                    }
                 }
                 catch (Exception)
                 {
@@ -111,10 +121,20 @@ namespace LogTool
         private void log_show_callback(object sender, EventArgs e)
         {
             buffer_mutex.WaitOne();
+            if (log_buffer.Equals(""))
+            {
+                buffer_mutex.ReleaseMutex();
+                return;
+            }
             string[] recv_items = log_buffer.Split('\n');
+            using (StreamWriter streamWriter = new StreamWriter(log_file_name, true, Encoding.UTF8))
+            {
+                streamWriter.WriteLine(log_buffer.Replace("\n", "\n[" + TimeUtils.GetTimeString() + "]  "));
+            }
             log_buffer = "";
             buffer_mutex.ReleaseMutex();
 
+            log_data_mutex.WaitOne();
             log_data.Last().Text += recv_items[0];
             for (int i = 1; i < recv_items.Length; i++)
             {
@@ -122,11 +142,91 @@ namespace LogTool
             }
 
             dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
+            log_data_mutex.ReleaseMutex();
         }
 
         class LogItem
         {
             public string Text { get; set; }
+        }
+
+        private void serial_send(byte[] data)
+        {
+            try
+            {
+                if (!serial.send(data))
+                {
+                    log_add_line("发送失败");
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void log_clear()
+        {
+            log_data_mutex.WaitOne();
+            log_data.Clear();
+            log_data_mutex.ReleaseMutex();
+        }
+
+        private void log_add_line(string s)
+        {
+            log_data_mutex.WaitOne();
+            log_data.Add(new LogItem() { Text = s });
+            log_data_mutex.ReleaseMutex();
+        }
+
+        private void serial_send_data(string data)
+        {
+            List<byte> byte_data = new List<byte>();
+            if (cb_is_hex.IsChecked == true)
+            {
+                try
+                {
+                    byte_data = BytesUtils.String_to_byte(data).ToList();
+                }
+                catch (Exception)
+                {
+                    log_add_line("转换十六进制失败，发送失败");
+                    return;
+                }
+            }
+            else
+            {
+                byte_data = Encoding.UTF8.GetBytes(data).ToList();
+            }
+            if (cb_is_enter.IsChecked == true)
+            {
+                byte_data.Add((byte)'\r');
+                byte_data.Add((byte)'\n');
+            }
+            if (cb_is_clear.IsChecked == true)
+            {
+                log_clear();
+                log_add_line("Log Tool file begin");
+            }
+            if (cb_is_not_print.IsChecked == false)
+            {
+                log_add_line(data);
+            }
+
+            serial_send(byte_data.ToArray());
+        }
+
+        private void btn_send_Click(object sender, RoutedEventArgs e)
+        {
+            serial_send_data(tb_send_data.Text);
+        }
+
+        private void tb_send_data_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                serial_send_data(tb_send_data.Text);
+            }
         }
     }
 }

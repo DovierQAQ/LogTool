@@ -51,16 +51,16 @@
                 </GroupBox>
                 <GroupBox Header="发送设置">
                     <StackPanel Margin="20, 0, 0, 0">
-                        <CheckBox Content="十六进制" Margin="2"></CheckBox>
-                        <CheckBox Content="\r\n结尾" Margin="2" IsChecked="True"></CheckBox>
-                        <CheckBox Content="清屏+发送" Margin="2"></CheckBox>
-                        <CheckBox Content="不显示发送内容" Margin="2"></CheckBox>
+                        <CheckBox x:Name="cb_is_hex" Content="十六进制" Margin="2"></CheckBox>
+                        <CheckBox x:Name="cb_is_enter" Content="\r\n结尾" Margin="2" IsChecked="True"></CheckBox>
+                        <CheckBox x:Name="cb_is_clear" Content="清屏+发送" Margin="2"></CheckBox>
+                        <CheckBox x:Name="cb_is_not_print" Content="不显示发送内容" Margin="2" IsChecked="True"></CheckBox>
                     </StackPanel>
                 </GroupBox>
             </DockPanel>
             <DockPanel DockPanel.Dock="Bottom" Height="20" Margin="2">
-                <Button Content="发送" DockPanel.Dock="Right" Margin="5, 0" Width="60"></Button>
-                <TextBox></TextBox>
+                <Button x:Name="btn_send" Content="发送" DockPanel.Dock="Right" Margin="5, 0" Width="60" Height="20" VerticalAlignment="Top" Click="btn_send_Click"></Button>
+                <TextBox x:Name="tb_send_data" KeyDown="tb_send_data_KeyDown"></TextBox>
             </DockPanel>
             <GroupBox Header="过滤条件">
                 <DockPanel>

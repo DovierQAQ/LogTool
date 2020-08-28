@@ -45,11 +45,18 @@ namespace LogTool
                 timer_refresh.Tick += new EventHandler(refresh_ports_callback);
                 timer_refresh.Start();
             }
+
+            refresh_ports();
+        }
+
+        private void refresh_ports()
+        {
+            ports.Ports = SerialPort.GetPortNames().ToList();
         }
 
         private void refresh_ports_callback(object sender, EventArgs e)
         {
-            ports.Ports = SerialPort.GetPortNames().ToList();
+            refresh_ports();
         }
 
         private void Serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -93,6 +100,16 @@ namespace LogTool
             is_open = false;
 
             return true;
+        }
+
+        public bool send(byte[] data)
+        {
+            if (serialPort.IsOpen)
+            {
+                serialPort.Write(data, 0, data.Length);
+                return true;
+            }
+            return false;
         }
 
         public class PortsToDisplay : INotifyPropertyChanged
