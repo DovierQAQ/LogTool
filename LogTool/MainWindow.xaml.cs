@@ -31,11 +31,14 @@ namespace LogTool
         }
 
         GFSerial serial = null;
+
         ObservableCollection<LogItem> log_data = new ObservableCollection<LogItem>();
         Mutex log_data_mutex = new Mutex();
         Mutex buffer_mutex = new Mutex();
         string log_buffer = "";
         string log_file_name = "";
+
+        static public ObservableCollection<FilterUtils.Filter> filters = new ObservableCollection<FilterUtils.Filter>();
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -47,6 +50,8 @@ namespace LogTool
 
             log_add_info("Log Tool file begin");
             dg_log.DataContext = log_data;
+
+            dg_filter.DataContext = filters;
 
             DispatcherTimer timer_show_log = new DispatcherTimer();
             timer_show_log.Interval = TimeSpan.FromMilliseconds(10);
@@ -142,7 +147,19 @@ namespace LogTool
             log_data_mutex.WaitOne();
             for (int i = 0; i < recv_items.Length - 1; i++)
             {
-                log_data.Add(new LogItem(recv_items[i]));
+                bool is_match = false;
+                foreach (FilterUtils.Filter filter in filters)
+                {
+                    if (!is_match && FilterUtils.Filter_match(recv_items[i], filter))
+                    {
+                        is_match = true;
+                        log_data.Add(new LogItem(recv_items[i], filter.Foreground, filter.Background));
+                    }
+                }
+                if (!is_match)
+                {
+                    log_data.Add(new LogItem(recv_items[i]));
+                }
             }
 
             dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
@@ -241,6 +258,24 @@ namespace LogTool
             {
                 serial_send_data(tb_send_data.Text);
             }
+        }
+
+        static public string selected_string = "";
+        private void btn_add_filter_Click(object sender, RoutedEventArgs e)
+        {
+            AddFilter addFilter = new AddFilter();
+
+            addFilter.ShowDialog();
+        }
+
+        private void btn_clear_log_Click(object sender, RoutedEventArgs e)
+        {
+            log_clear();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            filters.Clear();
         }
     }
 
