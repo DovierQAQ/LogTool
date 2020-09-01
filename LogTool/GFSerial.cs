@@ -16,9 +16,16 @@ namespace LogTool
         static public PortsToDisplay ports = new PortsToDisplay();
         static private DispatcherTimer timer_refresh = null;
 
-        public bool is_open = false;
+        //public bool is_open = false;
         public Mutex recv_data_mutex = new Mutex();
         public List<byte> serial_recv_data = new List<byte>();
+        public bool is_open
+        {
+            get
+            {
+                return serialPort.IsOpen;
+            }
+        }
 
         SerialPort serialPort = new SerialPort();
         Action recv_callback = null;
@@ -86,7 +93,7 @@ namespace LogTool
             serialPort.BaudRate = baud;
 
             serialPort.Open();
-            is_open = true;
+            //is_open = true;
 
             return true;
         }
@@ -97,7 +104,7 @@ namespace LogTool
             serialPort.DiscardOutBuffer();
 
             serialPort.Close();
-            is_open = false;
+            //is_open = false;
 
             return true;
         }

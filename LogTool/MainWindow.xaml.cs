@@ -89,12 +89,8 @@ namespace LogTool
                 try
                 {
                     serial.open_serial(cb_com.Text, int.Parse(cb_baud.Text));
+                    log_clear();
                     log_file_name = "log/" + cb_com.Text + "_" + TimeUtils.GetFileTimeString() + ".log";
-                    if (!File.Exists(log_file_name))
-                    {
-                        FileStream fs = File.Create(log_file_name);
-                        fs.Close();
-                    }
                 }
                 catch (Exception)
                 {
@@ -127,16 +123,24 @@ namespace LogTool
                 return;
             }
             string[] recv_items = log_buffer.Split('\n');
+            if (recv_items.Length <= 1)
+            {
+                buffer_mutex.ReleaseMutex();
+                return;
+            }
+            log_buffer = recv_items.Last();
+            tb_recv_data.Dispatcher.Invoke(new Action(delegate { tb_recv_data.Text = log_buffer; }));
             using (StreamWriter streamWriter = new StreamWriter(log_file_name, true, Encoding.UTF8))
             {
-                streamWriter.WriteLine(log_buffer.Replace("\n", "\n[" + TimeUtils.GetTimeString() + "]  "));
+                for (int i = 0; i < recv_items.Length - 1; i++)
+                {
+                    streamWriter.WriteLine("[" + TimeUtils.GetTimeString() + "]  " + recv_items[i]);
+                }
             }
-            log_buffer = "";
             buffer_mutex.ReleaseMutex();
 
             log_data_mutex.WaitOne();
-            log_data.Last().Text += recv_items[0];
-            for (int i = 1; i < recv_items.Length; i++)
+            for (int i = 0; i < recv_items.Length - 1; i++)
             {
                 log_data.Add(new LogItem(recv_items[i]));
             }
@@ -165,6 +169,7 @@ namespace LogTool
             log_data_mutex.WaitOne();
             log_data.Clear();
             log_data_mutex.ReleaseMutex();
+            log_add_info("Log Tool file begin");
         }
 
         private void log_add_item(LogItem item)
@@ -216,7 +221,6 @@ namespace LogTool
             if (cb_is_clear.IsChecked == true)
             {
                 log_clear();
-                log_add_info("Log Tool file begin");
             }
             if (cb_is_not_print.IsChecked == false)
             {
