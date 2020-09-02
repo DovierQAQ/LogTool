@@ -87,6 +87,7 @@
                               MouseDoubleClick="dg_filter_MouseDoubleClick" MouseLeftButtonUp="dg_filter_MouseLeftButtonUp" SelectionUnit="Cell">
                         <DataGrid.Columns>
                             <DataGridCheckBoxColumn Binding="{Binding Is_enable}"></DataGridCheckBoxColumn>
+                            <DataGridTextColumn Binding="{Binding State}"></DataGridTextColumn>
                             <DataGridTemplateColumn Width="550">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>

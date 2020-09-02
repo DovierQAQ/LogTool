@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -23,7 +24,15 @@ namespace LogTool
                 return false;
             }
             string filter_text = filter.Text;
-            if (!filter.Is_case_sensitive)
+            if (filter.Is_regex)
+            {
+                Match m = Regex.Match(target, filter_text);
+                if (m.Success)
+                {
+                    return true;
+                }
+            }
+            else if (!filter.Is_case_sensitive)
             {
                 target = target.ToLower();
                 filter_text = filter_text.ToLower();
@@ -164,6 +173,23 @@ namespace LogTool
                     }
                 } 
             }
+            private string state;
+            public string State
+            {
+                get
+                {
+                    return state;
+                }
+                set
+                {
+                    if (state != value)
+                    {
+                        state = value;
+                        MainWindow.analys_log_data();
+                        PropertyChanged(this, new PropertyChangedEventArgs("State"));
+                    }
+                }
+            }
             private string text;
             public string Text 
             { 
@@ -228,6 +254,7 @@ namespace LogTool
                     {
                         is_case_sensitive = value;
                         MainWindow.analys_log_data();
+                        refresh_state();
                         PropertyChanged(this, new PropertyChangedEventArgs("Is_case_sensitive"));
                     }
                 }
@@ -245,8 +272,22 @@ namespace LogTool
                     {
                         is_regex = value;
                         MainWindow.analys_log_data();
+                        refresh_state();
                         PropertyChanged(this, new PropertyChangedEventArgs("Is_regex"));
                     }
+                }
+            }
+
+            private void refresh_state()
+            {
+                State = "";
+                if (is_case_sensitive)
+                {
+                    State += "[Aa]";
+                }
+                if (is_regex)
+                {
+                    State += "[r]";
                 }
             }
 
