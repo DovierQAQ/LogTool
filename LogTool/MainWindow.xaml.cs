@@ -43,9 +43,14 @@ namespace LogTool
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            serial = new GFSerial(delegate { recv_data_callback(); });
+            serial = new GFSerial(delegate { recv_data_callback(); }, delegate { serial_close_callback(); });
 
             cb_com.DataContext = GFSerial.ports;
+            Console.WriteLine(cb_com.Items.Count.ToString());
+            if (cb_com.Text.Equals("") && GFSerial.ports.Ports.Count > 0)
+            {
+                cb_com.SelectedIndex = 0;
+            }
 
             cb_baud.SelectedIndex = 8;
 
@@ -57,6 +62,11 @@ namespace LogTool
             timer_show_log.Interval = TimeSpan.FromMilliseconds(10);
             timer_show_log.Tick += new EventHandler(log_show_callback);
             timer_show_log.Start();
+        }
+
+        private void serial_close_callback()
+        {
+            open_state();
         }
 
         private void open_state()

@@ -19,20 +19,16 @@ namespace LogTool
         //public bool is_open = false;
         public Mutex recv_data_mutex = new Mutex();
         public List<byte> serial_recv_data = new List<byte>();
-        public bool is_open
-        {
-            get
-            {
-                return serialPort.IsOpen;
-            }
-        }
+        public bool is_open = false;
 
         SerialPort serialPort = new SerialPort();
         Action recv_callback = null;
+        Action close_callback = null;
 
-        public GFSerial(Action serial_recv_callback)
+        public GFSerial(Action serial_recv_callback, Action serial_close_callback = null)
         {
             recv_callback = serial_recv_callback;
+            close_callback = serial_close_callback;
 
             serialPort.ReadTimeout = 8000;
             serialPort.WriteTimeout = 8000;
@@ -48,7 +44,7 @@ namespace LogTool
             if (timer_refresh == null) // todo multiple serial objects
             {
                 timer_refresh = new DispatcherTimer();
-                timer_refresh.Interval = TimeSpan.FromMilliseconds(2000);
+                timer_refresh.Interval = TimeSpan.FromMilliseconds(1000);
                 timer_refresh.Tick += new EventHandler(refresh_ports_callback);
                 timer_refresh.Start();
             }
@@ -63,7 +59,19 @@ namespace LogTool
 
         private void refresh_ports_callback(object sender, EventArgs e)
         {
-            refresh_ports();
+            if (!is_open) // todo multiple serial objects
+            {
+                refresh_ports();
+            }
+            else
+            {
+                if (!serialPort.IsOpen)
+                {
+                    is_open = false;
+                    close_callback.Invoke();
+                    refresh_ports();
+                }
+            }
         }
 
         private void Serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -93,7 +101,7 @@ namespace LogTool
             serialPort.BaudRate = baud;
 
             serialPort.Open();
-            //is_open = true;
+            is_open = true;
 
             return true;
         }
@@ -104,7 +112,7 @@ namespace LogTool
             serialPort.DiscardOutBuffer();
 
             serialPort.Close();
-            //is_open = false;
+            is_open = false;
 
             return true;
         }
