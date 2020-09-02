@@ -20,6 +20,7 @@
                 <TextBox x:Name="tb_filter_text" Height="21" Width="500" VerticalContentAlignment="Center"></TextBox>
             </StackPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <CheckBox x:Name="cb_enable" Content="启用" Margin="20, 0" IsChecked="True"></CheckBox>
                 <CheckBox x:Name="cb_case_sensitive" Content="区分大小写" Margin="20, 0"></CheckBox>
                 <CheckBox x:Name="cb_regex" Content="正则表达式" Margin="20, 0" IsEnabled="False"></CheckBox>
             </StackPanel>

@@ -19,9 +19,28 @@ namespace LogTool
     /// </summary>
     public partial class AddFilter : Window
     {
+        bool is_change = false;
+        FilterUtils.Filter change_filter;
+
         public AddFilter()
         {
             InitializeComponent();
+        }
+
+        public AddFilter(FilterUtils.Filter filter)
+        {
+            InitializeComponent();
+
+            is_change = true;
+
+            cb_enable.IsChecked = filter.Is_enable;
+            cb_case_sensitive.IsChecked = filter.Is_case_sensitive;
+            cb_regex.IsChecked = filter.Is_regex;
+            tb_filter_text.Text = filter.Text;
+            cp_forground.SelectedColor = ((SolidColorBrush)filter.Foreground).Color;
+            cp_background.SelectedColor = ((SolidColorBrush)filter.Background).Color;
+
+            change_filter = filter;
         }
 
         private void btn_ok_Click(object sender, RoutedEventArgs e)
@@ -32,15 +51,27 @@ namespace LogTool
                 return;
             }
 
-            MainWindow.filters.Add(new FilterUtils.Filter()
+            if (is_change)
             {
-                Is_enable = true,
-                Is_case_sensitive = (bool)cb_case_sensitive.IsChecked,
-                Is_regex = (bool)cb_regex.IsChecked,
-                Text = tb_filter_text.Text,
-                Foreground = new SolidColorBrush((Color)cp_forground.SelectedColor),
-                Background = new SolidColorBrush((Color)cp_background.SelectedColor)
-            });
+                change_filter.Is_enable = (bool)cb_enable.IsChecked;
+                change_filter.Is_case_sensitive = (bool)cb_case_sensitive.IsChecked;
+                change_filter.Is_regex = (bool)cb_regex.IsChecked;
+                change_filter.Text = tb_filter_text.Text;
+                change_filter.Foreground = new SolidColorBrush((Color)cp_forground.SelectedColor);
+                change_filter.Background = new SolidColorBrush((Color)cp_background.SelectedColor);
+            }
+            else
+            {
+                MainWindow.filters.Add(new FilterUtils.Filter()
+                {
+                    Is_enable = (bool)cb_enable.IsChecked,
+                    Is_case_sensitive = (bool)cb_case_sensitive.IsChecked,
+                    Is_regex = (bool)cb_regex.IsChecked,
+                    Text = tb_filter_text.Text,
+                    Foreground = new SolidColorBrush((Color)cp_forground.SelectedColor),
+                    Background = new SolidColorBrush((Color)cp_background.SelectedColor)
+                });
+            }
             Close();
         }
 

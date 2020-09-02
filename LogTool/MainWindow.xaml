@@ -81,7 +81,7 @@
                         <Button x:Name="btn_clear_log" Content="清空显示" Width="65" Margin="5, 2" Click="btn_clear_log_Click"></Button>
                     </StackPanel>
                     <DataGrid x:Name="dg_filter" ItemsSource="{Binding}" IsReadOnly="True" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" 
-                              HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas">
+                              HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas" MouseDoubleClick="dg_filter_MouseDoubleClick">
                         <DataGrid.Columns>
                             <DataGridCheckBoxColumn Binding="{Binding Is_enable}"></DataGridCheckBoxColumn>
                             <DataGridTemplateColumn Width="550">

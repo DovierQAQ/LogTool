@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -105,14 +107,106 @@ namespace LogTool
             }
         }
 
-        public class Filter
+        public class Filter : INotifyPropertyChanged
         {
-            public bool Is_enable { get; set; }
-            public string Text { get; set; }
-            public Brush Foreground { get; set; }
-            public Brush Background { get; set; }
-            public bool Is_case_sensitive { get; set; }
-            public bool Is_regex { get; set; }
+            private bool is_enable;
+            public bool Is_enable 
+            { 
+                get 
+                { 
+                    return is_enable; 
+                } 
+                set 
+                {
+                    if (is_enable != value)
+                    {
+                        is_enable = value;
+                        PropertyChanged(this, new PropertyChangedEventArgs("Is_enable"));
+                    }
+                } 
+            }
+            private string text;
+            public string Text 
+            { 
+                get
+                {
+                    return text;
+                }
+                set
+                {
+                    if (text != value)
+                    {
+                        text = value;
+                        PropertyChanged(this, new PropertyChangedEventArgs("Text"));
+                    }
+                }
+            }
+            private Brush foreground;
+            public Brush Foreground 
+            { 
+                get
+                {
+                    return foreground;
+                }
+                set
+                {
+                    if (foreground != value)
+                    {
+                        foreground = value;
+                        PropertyChanged(this, new PropertyChangedEventArgs("Foreground"));
+                    }
+                }
+            }
+            private Brush background;
+            public Brush Background 
+            { 
+                get
+                {
+                    return background;
+                }
+                set
+                {
+                    if (background != value)
+                    {
+                        background = value;
+                        PropertyChanged(this, new PropertyChangedEventArgs("Background"));
+                    }
+                }
+            }
+            private bool is_case_sensitive;
+            public bool Is_case_sensitive 
+            { 
+                get
+                {
+                    return is_case_sensitive;
+                }
+                set
+                {
+                    if (is_case_sensitive != value)
+                    {
+                        is_case_sensitive = value;
+                        PropertyChanged(this, new PropertyChangedEventArgs("Is_case_sensitive"));
+                    }
+                }
+            }
+            private bool is_regex;
+            public bool Is_regex 
+            { 
+                get
+                {
+                    return is_regex;
+                }
+                set
+                {
+                    if (is_regex != value)
+                    {
+                        is_regex = value;
+                        PropertyChanged(this, new PropertyChangedEventArgs("Is_regex"));
+                    }
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged = delegate { };
         }
     }
 }

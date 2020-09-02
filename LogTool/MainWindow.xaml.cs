@@ -327,6 +327,33 @@ namespace LogTool
         {
             FilterUtils.Filter_read(ref filters);
         }
+
+        private void dg_filter_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DataGrid datagrid = sender as DataGrid;
+            Point aP = e.GetPosition(datagrid);
+            IInputElement obj = datagrid.InputHitTest(aP);
+            DependencyObject target = obj as DependencyObject;
+
+            while (target != null)
+            {
+                if (target is DataGridRow)
+                {
+                    break;
+                }
+                target = VisualTreeHelper.GetParent(target);
+            }
+
+            DataGridRow dataGridRow = target as DataGridRow;
+            if (dataGridRow != null)
+            {
+                int index = dataGridRow.GetIndex();
+
+                FilterUtils.Filter filter = filters[index];
+                AddFilter addFilter = new AddFilter(filter);
+                addFilter.ShowDialog();
+            }
+        }
     }
 
     class LogItem
