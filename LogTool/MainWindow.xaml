@@ -83,7 +83,8 @@
                         <Button x:Name="btn_clear_log" Content="清屏" Width="60" Margin="5, 2" Click="btn_clear_log_Click"></Button>
                     </StackPanel>
                     <DataGrid x:Name="dg_filter" ItemsSource="{Binding}" IsReadOnly="True" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" 
-                              HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas" MouseDoubleClick="dg_filter_MouseDoubleClick">
+                              HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas" 
+                              MouseDoubleClick="dg_filter_MouseDoubleClick" MouseLeftButtonUp="dg_filter_MouseLeftButtonUp" SelectionUnit="Cell">
                         <DataGrid.Columns>
                             <DataGridCheckBoxColumn Binding="{Binding Is_enable}"></DataGridCheckBoxColumn>
                             <DataGridTemplateColumn Width="550">

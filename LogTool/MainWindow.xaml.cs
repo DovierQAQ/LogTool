@@ -30,6 +30,8 @@ namespace LogTool
             InitializeComponent();
         }
 
+        string window_title = "GuoFan Log Tool";
+
         static GFSerial serial = null;
 
         static ObservableCollection<LogItem> log_data = new ObservableCollection<LogItem>();
@@ -66,6 +68,8 @@ namespace LogTool
             timer_show_log.Start();
 
             analys_log_data();
+
+            Title = window_title;
         }
 
         private void serial_close_callback()
@@ -483,6 +487,19 @@ namespace LogTool
                 catch (Exception)
                 {
 
+                }
+            }
+        }
+
+        private void dg_filter_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (dg_filter.SelectedCells.Count > 0)
+            {
+                if (dg_filter.SelectedCells[0].Column.DisplayIndex == 0)
+                {
+                    FilterUtils.Filter filter = (FilterUtils.Filter)dg_filter.SelectedCells[0].Item;
+                    filter.Is_enable = !filter.Is_enable;
+                    analys_log_data();
                 }
             }
         }
