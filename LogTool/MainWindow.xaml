@@ -73,8 +73,8 @@
             <GroupBox Header="过滤条件">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Bottom" Height="25" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Content="导入文件" Width="65" Margin="5, 2"></Button>
-                        <Button Content="导出文件" Width="65" Margin="5, 2"></Button>
+                        <Button x:Name="btn_read_filters" Content="导入过滤" Width="65" Margin="5, 2" Click="btn_read_filters_Click"></Button>
+                        <Button Content="导出过滤" Width="65" Margin="5, 2"></Button>
                         <Button x:Name="btn_add_filter" Content="添加过滤" Width="65" Margin="5, 2" Click="btn_add_filter_Click"></Button>
                         <Button x:Name="btn_show_filtered" Content="显示过滤" Width="65" Margin="5, 2" Click="btn_show_filtered_Click"></Button>
                         <Button Content="清空过滤" Width="65" Margin="5, 2" Click="Button_Click"></Button>

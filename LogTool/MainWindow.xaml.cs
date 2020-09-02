@@ -312,6 +312,11 @@ namespace LogTool
 
             dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
         }
+
+        private void btn_read_filters_Click(object sender, RoutedEventArgs e)
+        {
+            FilterUtils.Filter_read(ref filters);
+        }
     }
 
     class LogItem
