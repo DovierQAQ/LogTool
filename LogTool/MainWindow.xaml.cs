@@ -354,6 +354,11 @@ namespace LogTool
                 addFilter.ShowDialog();
             }
         }
+
+        private void btn_save_filters_Click(object sender, RoutedEventArgs e)
+        {
+            FilterUtils.Filter_save(ref filters);
+        }
     }
 
     class LogItem

@@ -107,6 +107,44 @@ namespace LogTool
             }
         }
 
+        static public void Filter_save(ref ObservableCollection<Filter> filters)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "选择过滤器文件位置";
+            saveFileDialog.Filter = "过滤器文件|*.tat|所有文件|*.*";
+            saveFileDialog.FileName = "filter";
+            saveFileDialog.FilterIndex = 1;
+            saveFileDialog.RestoreDirectory = true;
+            saveFileDialog.DefaultExt = "tat";
+            if (saveFileDialog.ShowDialog() == false)
+            {
+                return;
+            }
+
+            string file_path = saveFileDialog.FileName;
+
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.AppendChild(xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null));
+            XmlElement root = xmlDoc.CreateElement("GuoFanLogTool");
+            xmlDoc.AppendChild(root);
+            XmlElement filter_list = xmlDoc.CreateElement("filters");
+            root.AppendChild(filter_list);
+
+            foreach (var filter in filters)
+            {
+                XmlElement filter_xml = xmlDoc.CreateElement("filter");
+                filter_xml.SetAttribute("enabled", filter.Is_enable ? "y" : "n");
+                filter_xml.SetAttribute("case_sensitive", filter.Is_case_sensitive ? "y" : "n");
+                filter_xml.SetAttribute("regex", filter.Is_regex ? "y" : "n");
+                filter_xml.SetAttribute("foreColor", filter.Foreground.ToString().Replace("#", ""));
+                filter_xml.SetAttribute("backColor", filter.Background.ToString().Replace("#", ""));
+                filter_xml.SetAttribute("text", filter.Text);
+                filter_list.AppendChild(filter_xml);
+            }
+
+            xmlDoc.Save(file_path);
+        }
+
         public class Filter : INotifyPropertyChanged
         {
             private bool is_enable;
