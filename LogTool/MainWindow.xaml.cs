@@ -338,13 +338,13 @@ namespace LogTool
             {
                 is_show_filtered = false;
                 dg_log.DataContext = log_data;
-                btn_show_filtered.Content = "显示过滤";
+                btn_show_filtered.Content = "过滤";
             }
             else
             {
                 is_show_filtered = true;
                 dg_log.DataContext = log_data_filtered;
-                btn_show_filtered.Content = "显示全部";
+                btn_show_filtered.Content = "全部";
             }
 
             if (serial.is_open)
@@ -422,12 +422,14 @@ namespace LogTool
             }
         }
 
+        static string log_data_file_name = "";
         static public void read_log_data(string file_name)
         {
             using (StreamReader streamReader = new StreamReader(file_name, Encoding.Default))
             {
                 file_data = streamReader.ReadToEnd();
             }
+            log_data_file_name = file_name;
         }
 
         private void dg_log_Drop(object sender, DragEventArgs e)
@@ -451,6 +453,15 @@ namespace LogTool
             else if (e.Key == Key.N && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
                 add_filter();
+            }
+            else if (e.Key == Key.F5)
+            {
+                if (!serial.is_open)
+                {
+                    read_log_data(log_data_file_name);
+
+                    analys_log_data();
+                }
             }
         }
 

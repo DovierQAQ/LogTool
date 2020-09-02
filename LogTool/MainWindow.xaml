@@ -74,13 +74,13 @@
             <GroupBox Header="过滤条件">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Bottom" Height="25" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button x:Name="btn_read_filters" Content="导入" Width="65" Margin="5, 2" Click="btn_read_filters_Click"></Button>
-                        <Button x:Name="btn_save_filters" Content="导出" Width="65" Margin="5, 2" Click="btn_save_filters_Click"></Button>
-                        <Button x:Name="btn_add_filter" Content="添加" Width="65" Margin="5, 2" Click="btn_add_filter_Click"></Button>
-                        <Button x:Name="btn_show_filtered" Content="显示" Width="65" Margin="5, 2" Click="btn_show_filtered_Click"></Button>
-                        <Button x:Name="btn_filter_delete" Content="删除" Width="65" Margin="5, 2" Click="btn_filter_delete_Click"></Button>
-                        <Button x:Name="btn_filter_clear" Content="清空" Width="65" Margin="5, 2" Click="btn_filter_clear_Click"></Button>
-                        <Button x:Name="btn_clear_log" Content="清空显示" Width="65" Margin="5, 2" Click="btn_clear_log_Click"></Button>
+                        <Button x:Name="btn_read_filters" Content="导入" Width="60" Margin="5, 2" Click="btn_read_filters_Click"></Button>
+                        <Button x:Name="btn_save_filters" Content="导出" Width="60" Margin="5, 2" Click="btn_save_filters_Click"></Button>
+                        <Button x:Name="btn_add_filter" Content="添加" Width="60" Margin="5, 2" Click="btn_add_filter_Click"></Button>
+                        <Button x:Name="btn_show_filtered" Content="过滤" Width="60" Margin="5, 2" Click="btn_show_filtered_Click"></Button>
+                        <Button x:Name="btn_filter_delete" Content="删除" Width="60" Margin="5, 2" Click="btn_filter_delete_Click"></Button>
+                        <Button x:Name="btn_filter_clear" Content="清空" Width="60" Margin="5, 2" Click="btn_filter_clear_Click"></Button>
+                        <Button x:Name="btn_clear_log" Content="清屏" Width="60" Margin="5, 2" Click="btn_clear_log_Click"></Button>
                     </StackPanel>
                     <DataGrid x:Name="dg_filter" ItemsSource="{Binding}" IsReadOnly="True" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" 
                               HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas" MouseDoubleClick="dg_filter_MouseDoubleClick">
