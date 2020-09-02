@@ -6,24 +6,24 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:LogTool"
         mc:Ignorable="d"
-        Title="添加过滤器" Height="180" Width="600">
+        Title="添加过滤器" Height="190" Width="600">
     <Grid>
         <DockPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="20">
                 <TextBlock Text="文本颜色：" Margin="10, 0"></TextBlock>
-                <xctk:ColorPicker x:Name="cp_forground" Width="100" SelectedColor="Black"></xctk:ColorPicker>
+                <xctk:ColorPicker x:Name="cp_forground" Width="100" SelectedColor="Black" SelectedColorChanged="cp_forground_SelectedColorChanged"></xctk:ColorPicker>
                 <TextBlock Text="背景色：" Margin="10, 0"></TextBlock>
-                <xctk:ColorPicker x:Name="cp_background" Width="100" SelectedColor="White"></xctk:ColorPicker>
+                <xctk:ColorPicker x:Name="cp_background" Width="100" SelectedColor="White" SelectedColorChanged="cp_background_SelectedColorChanged"></xctk:ColorPicker>
             </StackPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="文本：" Margin="5"></TextBlock>
-                <TextBox x:Name="tb_filter_text" Height="25" Width="500" VerticalContentAlignment="Center"></TextBox>
+                <TextBox x:Name="tb_filter_text" Height="21" Width="500" VerticalContentAlignment="Center"></TextBox>
             </StackPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <CheckBox x:Name="cb_case_sensitive" Content="区分大小写" Margin="20, 0"></CheckBox>
                 <CheckBox x:Name="cb_regex" Content="正则表达式" Margin="20, 0" IsEnabled="False"></CheckBox>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
                 <Button x:Name="btn_ok" Content="确定" Width="65" Height="20" Margin="20, 0" Click="btn_ok_Click"></Button>
                 <Button x:Name="btn_cancel" Content="取消" Width="65" Height="20" Margin="20, 0" Click="btn_cancel_Click"></Button>
             </StackPanel>

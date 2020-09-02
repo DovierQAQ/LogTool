@@ -33,6 +33,7 @@ namespace LogTool
         GFSerial serial = null;
 
         ObservableCollection<LogItem> log_data = new ObservableCollection<LogItem>();
+        ObservableCollection<LogItem> log_data_filtered = new ObservableCollection<LogItem>();
         Mutex log_data_mutex = new Mutex();
         Mutex buffer_mutex = new Mutex();
         string log_buffer = "";
@@ -48,7 +49,6 @@ namespace LogTool
 
             cb_baud.SelectedIndex = 8;
 
-            log_add_info("Log Tool file begin");
             dg_log.DataContext = log_data;
 
             dg_filter.DataContext = filters;
@@ -153,12 +153,28 @@ namespace LogTool
                     if (!is_match && FilterUtils.Filter_match(recv_items[i], filter))
                     {
                         is_match = true;
-                        log_data.Add(new LogItem(recv_items[i], filter.Foreground, filter.Background));
+                        LogItem item = new LogItem(recv_items[i], filter.Foreground, filter.Background);
+                        log_data.Add(item);
+                        log_data_filtered.Add(item);
+                        if (log_data_filtered.Count > 10000)
+                        {
+                            for (int j = 0; j < 5000; j++)
+                            {
+                                log_data_filtered.RemoveAt(0);
+                            }
+                        }
                     }
                 }
                 if (!is_match)
                 {
                     log_data.Add(new LogItem(recv_items[i]));
+                }
+            }
+            if (log_data.Count > 10000)
+            {
+                for (int i = 0; i < 5000; i++)
+                {
+                    log_data.RemoveAt(0);
                 }
             }
 
@@ -185,8 +201,8 @@ namespace LogTool
         {
             log_data_mutex.WaitOne();
             log_data.Clear();
+            log_data_filtered.Clear();
             log_data_mutex.ReleaseMutex();
-            log_add_info("Log Tool file begin");
         }
 
         private void log_add_item(LogItem item)
@@ -276,6 +292,25 @@ namespace LogTool
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             filters.Clear();
+        }
+
+        bool is_show_filtered = false;
+        private void btn_show_filtered_Click(object sender, RoutedEventArgs e)
+        {
+            if (is_show_filtered)
+            {
+                is_show_filtered = false;
+                dg_log.DataContext = log_data;
+                btn_show_filtered.Content = "显示过滤";
+            }
+            else
+            {
+                is_show_filtered = true;
+                dg_log.DataContext = log_data_filtered;
+                btn_show_filtered.Content = "显示全部";
+            }
+
+            dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
         }
     }
 

@@ -48,5 +48,29 @@ namespace LogTool
         {
             Close();
         }
+
+        private void cp_forground_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            try
+            {
+                tb_filter_text.Foreground = new SolidColorBrush((Color)cp_forground.SelectedColor);
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void cp_background_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            try
+            {
+                tb_filter_text.Background = new SolidColorBrush((Color)cp_background.SelectedColor);
+            }
+            catch (Exception)
+            {
+
+            }
+        }
     }
 }
