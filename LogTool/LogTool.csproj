@@ -65,6 +65,9 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>LogTool.MainApp</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="GFBytesUtils, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -109,6 +112,7 @@
       <DependentUpon>AddFilter.xaml</DependentUpon>
     </Compile>
     <Compile Include="FilterUtils.cs" />
+    <Compile Include="MainApp.cs" />
     <Compile Include="TimeUtils.cs" />
     <Page Include="AddFilter.xaml">
       <SubType>Designer</SubType>

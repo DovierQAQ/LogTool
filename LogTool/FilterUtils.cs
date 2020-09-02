@@ -159,6 +159,7 @@ namespace LogTool
                     if (is_enable != value)
                     {
                         is_enable = value;
+                        MainWindow.analys_log_data();
                         PropertyChanged(this, new PropertyChangedEventArgs("Is_enable"));
                     }
                 } 
@@ -175,6 +176,7 @@ namespace LogTool
                     if (text != value)
                     {
                         text = value;
+                        MainWindow.analys_log_data();
                         PropertyChanged(this, new PropertyChangedEventArgs("Text"));
                     }
                 }
@@ -191,6 +193,7 @@ namespace LogTool
                     if (foreground != value)
                     {
                         foreground = value;
+                        MainWindow.analys_log_data();
                         PropertyChanged(this, new PropertyChangedEventArgs("Foreground"));
                     }
                 }
@@ -207,6 +210,7 @@ namespace LogTool
                     if (background != value)
                     {
                         background = value;
+                        MainWindow.analys_log_data();
                         PropertyChanged(this, new PropertyChangedEventArgs("Background"));
                     }
                 }
@@ -223,6 +227,7 @@ namespace LogTool
                     if (is_case_sensitive != value)
                     {
                         is_case_sensitive = value;
+                        MainWindow.analys_log_data();
                         PropertyChanged(this, new PropertyChangedEventArgs("Is_case_sensitive"));
                     }
                 }
@@ -239,6 +244,7 @@ namespace LogTool
                     if (is_regex != value)
                     {
                         is_regex = value;
+                        MainWindow.analys_log_data();
                         PropertyChanged(this, new PropertyChangedEventArgs("Is_regex"));
                     }
                 }

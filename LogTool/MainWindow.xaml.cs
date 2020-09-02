@@ -30,14 +30,16 @@ namespace LogTool
             InitializeComponent();
         }
 
-        GFSerial serial = null;
+        static GFSerial serial = null;
 
-        ObservableCollection<LogItem> log_data = new ObservableCollection<LogItem>();
-        ObservableCollection<LogItem> log_data_filtered = new ObservableCollection<LogItem>();
-        Mutex log_data_mutex = new Mutex();
+        static ObservableCollection<LogItem> log_data = new ObservableCollection<LogItem>();
+        static ObservableCollection<LogItem> log_data_filtered = new ObservableCollection<LogItem>();
+        static Mutex log_data_mutex = new Mutex();
         Mutex buffer_mutex = new Mutex();
         string log_buffer = "";
         string log_file_name = "";
+
+        static string file_data = "";
 
         static public ObservableCollection<FilterUtils.Filter> filters = new ObservableCollection<FilterUtils.Filter>();
 
@@ -62,6 +64,8 @@ namespace LogTool
             timer_show_log.Interval = TimeSpan.FromMilliseconds(10);
             timer_show_log.Tick += new EventHandler(log_show_callback);
             timer_show_log.Start();
+
+            analys_log_data();
         }
 
         private void serial_close_callback()
@@ -154,42 +158,12 @@ namespace LogTool
             }
             buffer_mutex.ReleaseMutex();
 
-            log_data_mutex.WaitOne();
             for (int i = 0; i < recv_items.Length - 1; i++)
             {
-                bool is_match = false;
-                foreach (FilterUtils.Filter filter in filters)
-                {
-                    if (!is_match && FilterUtils.Filter_match(recv_items[i], filter))
-                    {
-                        is_match = true;
-                        LogItem item = new LogItem(recv_items[i], filter.Foreground, filter.Background);
-                        log_data.Add(item);
-                        log_data_filtered.Add(item);
-                        if (log_data_filtered.Count > 10000)
-                        {
-                            for (int j = 0; j < 5000; j++)
-                            {
-                                log_data_filtered.RemoveAt(0);
-                            }
-                        }
-                    }
-                }
-                if (!is_match)
-                {
-                    log_data.Add(new LogItem(recv_items[i]));
-                }
-            }
-            if (log_data.Count > 10000)
-            {
-                for (int i = 0; i < 5000; i++)
-                {
-                    log_data.RemoveAt(0);
-                }
+                log_add_by_filters(recv_items[i]);
             }
 
             dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
-            log_data_mutex.ReleaseMutex();
         }
 
         private void serial_send(byte[] data)
@@ -207,7 +181,7 @@ namespace LogTool
             }
         }
 
-        private void log_clear()
+        static private void log_clear()
         {
             log_data_mutex.WaitOne();
             log_data.Clear();
@@ -215,10 +189,50 @@ namespace LogTool
             log_data_mutex.ReleaseMutex();
         }
 
-        private void log_add_item(LogItem item)
+        static private void log_add_by_filters(string s)
+        {
+            bool is_match = false;
+            foreach (FilterUtils.Filter filter in filters)
+            {
+                if (!is_match && FilterUtils.Filter_match(s, filter))
+                {
+                    is_match = true;
+                    LogItem item = new LogItem(s, filter.Foreground, filter.Background);
+                    log_add_item(item);
+                    log_filtered_add_item(item);
+                }
+            }
+            if (!is_match)
+            {
+                log_add_item(new LogItem(s));
+            }
+        }
+
+        static private void log_filtered_add_item(LogItem item)
+        {
+            log_data_mutex.WaitOne();
+            log_data_filtered.Add(item);
+            if (log_data_filtered.Count > 10000 && serial.is_open)
+            {
+                for (int i = 0; i < 5000; i++)
+                {
+                    log_data_filtered.RemoveAt(0);
+                }
+            }
+            log_data_mutex.ReleaseMutex();
+        }
+
+        static private void log_add_item(LogItem item)
         {
             log_data_mutex.WaitOne();
             log_data.Add(item);
+            if (log_data.Count > 10000 && serial.is_open)
+            {
+                for (int i = 0; i < 5000; i++)
+                {
+                    log_data.RemoveAt(0);
+                }
+            }
             log_data_mutex.ReleaseMutex();
         }
 
@@ -358,6 +372,46 @@ namespace LogTool
         private void btn_save_filters_Click(object sender, RoutedEventArgs e)
         {
             FilterUtils.Filter_save(ref filters);
+        }
+
+        static public void analys_log_data()
+        {
+            try
+            {
+                if (!serial.is_open && !file_data.Equals(""))
+                {
+                    string[] lines = file_data.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                    log_clear();
+                    foreach (var line in lines)
+                    {
+                        log_add_by_filters(line);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        static public void read_log_data(string file_name)
+        {
+            using (StreamReader streamReader = new StreamReader(file_name, Encoding.Default))
+            {
+                file_data = streamReader.ReadToEnd();
+            }
+        }
+
+        private void dg_log_Drop(object sender, DragEventArgs e)
+        {
+            if (!serial.is_open)
+            {
+                string fileName = ((Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
+
+                read_log_data(fileName);
+
+                analys_log_data();
+            }
         }
     }
 
