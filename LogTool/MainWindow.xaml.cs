@@ -70,6 +70,11 @@ namespace LogTool
             analys_log_data();
 
             Title = window_title;
+
+            if (!Directory.Exists("log"))
+            {
+                Directory.CreateDirectory("log");
+            }
         }
 
         private void serial_close_callback()
@@ -502,6 +507,11 @@ namespace LogTool
                     analys_log_data();
                 }
             }
+        }
+
+        private void dg_log_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            add_filter();
         }
     }
 
