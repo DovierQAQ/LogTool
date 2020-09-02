@@ -18,7 +18,7 @@ namespace LogTool
                 {
                     MainWindow.read_log_data(args[0]);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }

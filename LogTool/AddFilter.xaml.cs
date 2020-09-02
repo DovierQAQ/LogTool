@@ -27,6 +27,13 @@ namespace LogTool
             InitializeComponent();
         }
 
+        public AddFilter(string s)
+        {
+            InitializeComponent();
+
+            tb_filter_text.Text = s;
+        }
+
         public AddFilter(FilterUtils.Filter filter)
         {
             InitializeComponent();
@@ -72,6 +79,7 @@ namespace LogTool
                     Background = new SolidColorBrush((Color)cp_background.SelectedColor)
                 });
             }
+            MainWindow.analys_log_data();
             Close();
         }
 

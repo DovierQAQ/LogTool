@@ -300,10 +300,22 @@ namespace LogTool
             }
         }
 
-        static public string selected_string = "";
         private void btn_add_filter_Click(object sender, RoutedEventArgs e)
         {
-            AddFilter addFilter = new AddFilter();
+            add_filter();
+        }
+
+        private void add_filter()
+        {
+            AddFilter addFilter;
+            if (selected_item != null)
+            {
+                addFilter = new AddFilter(selected_item.Text);
+            }
+            else
+            {
+                addFilter = new AddFilter();
+            }
 
             addFilter.ShowDialog();
         }
@@ -313,13 +325,14 @@ namespace LogTool
             log_clear();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        bool is_show_filtered = false;
+        LogItem selected_item = null;
+        private void btn_show_filtered_Click(object sender, RoutedEventArgs e)
         {
-            filters.Clear();
+            switch_filter_show_state();
         }
 
-        bool is_show_filtered = false;
-        private void btn_show_filtered_Click(object sender, RoutedEventArgs e)
+        private void switch_filter_show_state()
         {
             if (is_show_filtered)
             {
@@ -334,7 +347,22 @@ namespace LogTool
                 btn_show_filtered.Content = "显示全部";
             }
 
-            dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
+            if (serial.is_open)
+            {
+                dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
+            }
+            else
+            {
+                if (selected_item != null)
+                {
+                    dg_log.ScrollIntoView(selected_item);
+                }
+            }
+        }
+
+        private void dg_log_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selected_item = (LogItem)dg_log.SelectedItem;
         }
 
         private void btn_read_filters_Click(object sender, RoutedEventArgs e)
@@ -411,6 +439,40 @@ namespace LogTool
                 read_log_data(fileName);
 
                 analys_log_data();
+            }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.H && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+            {
+                switch_filter_show_state();
+            }
+            else if (e.Key == Key.N && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+            {
+                add_filter();
+            }
+        }
+
+        private void btn_filter_clear_Click(object sender, RoutedEventArgs e)
+        {
+            filters.Clear();
+            analys_log_data();
+        }
+
+        private void btn_filter_delete_Click(object sender, RoutedEventArgs e)
+        {
+            if (dg_filter.SelectedItem != null)
+            {
+                try
+                {
+                    filters.Remove((FilterUtils.Filter)dg_filter.SelectedItem);
+                    analys_log_data();
+                }
+                catch (Exception)
+                {
+
+                }
             }
         }
     }
