@@ -701,7 +701,8 @@ namespace LogTool
 
         private void mn_about_Click(object sender, RoutedEventArgs e)
         {
-            log_add_error("guofan - todo");
+            About about = new About();
+            about.Show();
         }
     }
 

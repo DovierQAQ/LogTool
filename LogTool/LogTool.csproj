@@ -93,6 +93,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="About.xaml.cs">
+      <DependentUpon>About.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AddFilter.xaml.cs">
       <DependentUpon>AddFilter.xaml</DependentUpon>
     </Compile>
@@ -102,6 +105,10 @@
     <Compile Include="FilterUtils.cs" />
     <Compile Include="MainApp.cs" />
     <Compile Include="TimeUtils.cs" />
+    <Page Include="About.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AddFilter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
