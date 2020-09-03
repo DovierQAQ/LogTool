@@ -35,7 +35,8 @@
                     <DockPanel>
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="3" HorizontalAlignment="Center">
                             <TextBlock Text="串口号:" Height="16" Margin="0,4,0,0"/>
-                            <ComboBox x:Name="cb_com" Height="20" Width="76" Margin="5,0,0,0" ItemsSource="{Binding Ports}"></ComboBox>
+                            <ComboBox x:Name="cb_com" Height="20" Width="76" Margin="5,0,0,0" ItemsSource="{Binding Ports}">
+                            </ComboBox>
                         </StackPanel>
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="3" HorizontalAlignment="Center">
                             <TextBlock Text="波特率:" Height="16" Margin="0,4,0,0"/>

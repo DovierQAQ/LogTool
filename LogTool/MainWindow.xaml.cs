@@ -50,7 +50,6 @@ namespace LogTool
             serial = new GFSerial(delegate { recv_data_callback(); }, delegate { serial_close_callback(); });
 
             cb_com.DataContext = GFSerial.ports;
-            Console.WriteLine(cb_com.Items.Count.ToString());
             if (cb_com.Text.Equals("") && GFSerial.ports.Ports.Count > 0)
             {
                 cb_com.SelectedIndex = 0;
@@ -381,28 +380,23 @@ namespace LogTool
 
         private void dg_filter_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            DataGrid datagrid = sender as DataGrid;
-            Point aP = e.GetPosition(datagrid);
-            IInputElement obj = datagrid.InputHitTest(aP);
-            DependencyObject target = obj as DependencyObject;
-
-            while (target != null)
+            try
             {
-                if (target is DataGridRow)
+                AddFilter addFilter;
+                if (dg_filter.SelectedCells.Count > 0)
                 {
-                    break;
+                    FilterUtils.Filter filter = (FilterUtils.Filter)dg_filter.SelectedCells[0].Item;
+                    addFilter = new AddFilter(filter);
                 }
-                target = VisualTreeHelper.GetParent(target);
-            }
-
-            DataGridRow dataGridRow = target as DataGridRow;
-            if (dataGridRow != null)
-            {
-                int index = dataGridRow.GetIndex();
-
-                FilterUtils.Filter filter = filters[index];
-                AddFilter addFilter = new AddFilter(filter);
+                else
+                {
+                    addFilter = new AddFilter();
+                }
                 addFilter.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("编辑过滤器：" + ex.Message);
             }
         }
 

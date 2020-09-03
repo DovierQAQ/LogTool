@@ -3,17 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:LogTool"
         mc:Ignorable="d"
-        Title="添加过滤器" Height="190" Width="600">
+        Title="编辑过滤器" Height="190" Width="600">
     <Grid>
         <DockPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="20">
                 <TextBlock Text="文本颜色：" Margin="10, 0"></TextBlock>
-                <xctk:ColorPicker x:Name="cp_forground" Width="100" SelectedColor="Black" SelectedColorChanged="cp_forground_SelectedColorChanged"></xctk:ColorPicker>
+                <local:ColorCombobx x:Name="cc_foreground" Width="100" SelectedColorChanged="cc_foreground_SelectedColorChanged"></local:ColorCombobx>
+                <!--<xctk:ColorPicker x:Name="cp_forground" Width="100" SelectedColor="Black" SelectedColorChanged="cp_forground_SelectedColorChanged"></xctk:ColorPicker>-->
                 <TextBlock Text="背景色：" Margin="10, 0"></TextBlock>
-                <xctk:ColorPicker x:Name="cp_background" Width="100" SelectedColor="White" SelectedColorChanged="cp_background_SelectedColorChanged"></xctk:ColorPicker>
+                <local:ColorCombobx x:Name="cc_background" Width="100" SelectedColorChanged="cc_background_SelectedColorChanged"></local:ColorCombobx>
+                <!--<xctk:ColorPicker x:Name="cp_background" Width="100" SelectedColor="White" SelectedColorChanged="cp_background_SelectedColorChanged"></xctk:ColorPicker>-->
             </StackPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="文本：" Margin="5"></TextBlock>
