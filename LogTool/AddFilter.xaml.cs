@@ -25,6 +25,9 @@ namespace LogTool
         public AddFilter()
         {
             InitializeComponent();
+
+            cc_foreground.SelectedColor = Colors.Black;
+            cc_background.SelectedColor = Colors.White;
         }
 
         public AddFilter(string s)
@@ -32,6 +35,8 @@ namespace LogTool
             InitializeComponent();
 
             tb_filter_text.Text = s;
+            cc_foreground.SelectedColor = Colors.Black;
+            cc_background.SelectedColor = Colors.White;
         }
 
         public AddFilter(FilterUtils.Filter filter)

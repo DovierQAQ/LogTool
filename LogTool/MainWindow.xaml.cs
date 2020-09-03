@@ -476,17 +476,11 @@ namespace LogTool
 
         private void btn_filter_delete_Click(object sender, RoutedEventArgs e)
         {
-            if (dg_filter.SelectedItem != null)
+            if (dg_filter.SelectedCells.Count > 0)
             {
-                try
-                {
-                    filters.Remove((FilterUtils.Filter)dg_filter.SelectedItem);
-                    analys_log_data();
-                }
-                catch (Exception)
-                {
-
-                }
+                FilterUtils.Filter filter = (FilterUtils.Filter)dg_filter.SelectedCells[0].Item;
+                filters.Remove(filter);
+                analys_log_data();
             }
         }
 
