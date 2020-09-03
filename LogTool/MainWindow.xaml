@@ -8,11 +8,54 @@
         Title="GuoFan Log Tool" Height="850" Width="800" Loaded="Window_Loaded" KeyDown="Window_KeyDown">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
             <RowDefinition Height="*" />
             <RowDefinition Height="3" />
             <RowDefinition Height="200" />
         </Grid.RowDefinitions>
-        <DockPanel>
+        <Menu>
+            <MenuItem Header="文件" Margin="3, 0">
+                <MenuItem x:Name="mn_open" Header="打开日志" InputGestureText="Ctrl+O" Click="mn_open_Click"></MenuItem>
+                <MenuItem x:Name="mn_refresh_log" Header="刷新文件" InputGestureText="F5" Click="mn_refresh_log_Click"></MenuItem>
+                <Separator></Separator>
+                <MenuItem x:Name="mn_read_filters" Header="导入过滤器" Click="mn_read_filters_Click"></MenuItem>
+                <MenuItem x:Name="mn_save_filters" Header="导出过滤器" Click="mn_save_filters_Click"></MenuItem>
+                <Separator></Separator>
+                <MenuItem x:Name="mn_quit" Header="退出" Click="mn_quit_Click"></MenuItem>
+            </MenuItem>
+            <MenuItem x:Name="mn_edit" Header="编辑" Margin="3, 0">
+                <MenuItem x:Name="mn_find" Header="查找" InputGestureText="Ctrl+F" Click="mn_find_Click"></MenuItem>
+                <MenuItem x:Name="mn_pre" Header="上一个" InputGestureText="F2" Click="mn_pre_Click"></MenuItem>
+                <MenuItem x:Name="mn_next" Header="下一个" InputGestureText="F3" Click="mn_next_Click"></MenuItem>
+                <Separator></Separator>
+                <MenuItem x:Name="mn_goto" Header="跳至行" InputGestureText="Ctrl+G" Click="mn_goto_Click"></MenuItem>
+                <Separator></Separator>
+                <MenuItem x:Name="mn_settings" Header="选项" Click="mn_settings_Click"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="查看" Margin="3, 0">
+                <MenuItem x:Name="mn_swith_filter" Header="只显示过滤行" InputGestureText="Ctrl+H" Click="mn_swith_filter_Click"></MenuItem>
+                <Separator></Separator>
+                <MenuItem x:Name="mn_zoom_in" Header="放大" InputGestureText="Ctrl++" Click="mn_zoom_in_Click"></MenuItem>
+                <MenuItem x:Name="mn_zoom_out" Header="缩小" InputGestureText="Ctrl+-" Click="mn_zoom_out_Click"></MenuItem>
+                <MenuItem x:Name="mn_reset_zoom" Header="重置缩放" InputGestureText="Ctrl+0" Click="mn_reset_zoom_Click"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="过滤" Margin="3, 0">
+                <MenuItem x:Name="mn_add_filter" Header="新增过滤器" InputGestureText="Ctrl+N" Click="mn_add_filter_Click"></MenuItem>
+                <Separator></Separator>
+                <MenuItem x:Name="mn_edit_filter" Header="编辑选中过滤器" Click="mn_edit_filter_Click"></MenuItem>
+                <MenuItem x:Name="mn_delete_filter" Header="删除选中过滤器" Click="mn_delete_filter_Click"></MenuItem>
+                <Separator></Separator>
+                <MenuItem x:Name="mn_enable_all_filters" Header="启用所有过滤器" Click="mn_enable_all_filters_Click"></MenuItem>
+                <MenuItem x:Name="mn_disable_all_filters" Header="停用所有过滤器" Click="mn_disable_all_filters_Click"></MenuItem>
+                <MenuItem x:Name="mn_clear_filters" Header="清空过滤器" Click="mn_clear_filters_Click"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="帮助" Margin="3, 0">
+                <MenuItem x:Name="mn_help" Header="说明文档" Click="mn_help_Click"></MenuItem>
+                <Separator></Separator>
+                <MenuItem x:Name="mn_about" Header="关于" Click="mn_about_Click"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <DockPanel Grid.Row="1">
             <TextBox x:Name="tb_recv_data" DockPanel.Dock="Bottom" Margin="2" IsReadOnly="True"></TextBox>
             <DataGrid x:Name="dg_log" ItemsSource="{Binding}" IsReadOnly="True" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" 
                       HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas" 
@@ -28,8 +71,8 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
-        <GridSplitter Grid.Row="1" Height="3" HorizontalAlignment="Stretch"></GridSplitter>
-        <DockPanel Grid.Row="2">
+        <GridSplitter Grid.Row="2" Height="3" HorizontalAlignment="Stretch"></GridSplitter>
+        <DockPanel Grid.Row="3">
             <DockPanel>
                 <GroupBox Header="串口设置" DockPanel.Dock="Top" Width="150">
                     <DockPanel>

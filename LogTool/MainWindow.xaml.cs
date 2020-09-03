@@ -1,4 +1,5 @@
 ﻿using GFBytesUtils;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -74,6 +75,8 @@ namespace LogTool
             {
                 Directory.CreateDirectory("log");
             }
+
+            open_state();
         }
 
         private void serial_close_callback()
@@ -86,6 +89,7 @@ namespace LogTool
             btn_com_open.Content = "打开串口";
             cb_com.IsEnabled = true;
             cb_baud.IsEnabled = true;
+            mn_edit.IsEnabled = true;
         }
 
         private void close_state()
@@ -93,6 +97,7 @@ namespace LogTool
             btn_com_open.Content = "关闭串口";
             cb_com.IsEnabled = false;
             cb_baud.IsEnabled = false;
+            mn_edit.IsEnabled = false;
         }
 
         private void btn_com_open_Click(object sender, RoutedEventArgs e)
@@ -313,6 +318,11 @@ namespace LogTool
             add_filter();
         }
 
+        private void mn_add_filter_Click(object sender, RoutedEventArgs e)
+        {
+            add_filter();
+        }
+
         private void add_filter()
         {
             AddFilter addFilter;
@@ -347,12 +357,14 @@ namespace LogTool
                 is_show_filtered = false;
                 dg_log.DataContext = log_data;
                 btn_show_filtered.Content = "过滤";
+                mn_swith_filter.IsChecked = false;
             }
             else
             {
                 is_show_filtered = true;
                 dg_log.DataContext = log_data_filtered;
                 btn_show_filtered.Content = "全部";
+                mn_swith_filter.IsChecked = true;
             }
 
             if (serial.is_open)
@@ -378,7 +390,7 @@ namespace LogTool
             FilterUtils.Filter_read(ref filters);
         }
 
-        private void dg_filter_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void edit_filter()
         {
             try
             {
@@ -400,7 +412,34 @@ namespace LogTool
             }
         }
 
+        private void dg_filter_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            edit_filter();
+        }
+
+        private void mn_edit_filter_Click(object sender, RoutedEventArgs e)
+        {
+            if (dg_filter.SelectedCells.Count > 0)
+            {
+                edit_filter();
+            }
+            else
+            {
+                MessageBox.Show("未选定任何过滤器");
+            }
+        }
+
         private void btn_save_filters_Click(object sender, RoutedEventArgs e)
+        {
+            FilterUtils.Filter_save(ref filters);
+        }
+
+        private void mn_read_filters_Click(object sender, RoutedEventArgs e)
+        {
+            FilterUtils.Filter_read(ref filters);
+        }
+
+        private void mn_save_filters_Click(object sender, RoutedEventArgs e)
         {
             FilterUtils.Filter_save(ref filters);
         }
@@ -457,6 +496,25 @@ namespace LogTool
             {
                 add_filter();
             }
+            else if (e.Key == Key.O && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+            {
+                if (!serial.is_open)
+                {
+                    string log_file = open_log_file();
+                    if (log_file.Equals(""))
+                    {
+                        return;
+                    }
+
+                    read_log_data(log_file);
+
+                    analys_log_data();
+                }
+                else
+                {
+                    MessageBox.Show("请先关闭串口再进行日志分析");
+                }
+            }
             else if (e.Key == Key.F5)
             {
                 if (!serial.is_open)
@@ -474,7 +532,13 @@ namespace LogTool
             analys_log_data();
         }
 
-        private void btn_filter_delete_Click(object sender, RoutedEventArgs e)
+        private void mn_clear_filters_Click(object sender, RoutedEventArgs e)
+        {
+            filters.Clear();
+            analys_log_data();
+        }
+
+        private void delete_filter()
         {
             if (dg_filter.SelectedCells.Count > 0)
             {
@@ -482,6 +546,20 @@ namespace LogTool
                 filters.Remove(filter);
                 analys_log_data();
             }
+            else
+            {
+                MessageBox.Show("请先选中需删除的过滤器");
+            }
+        }
+
+        private void btn_filter_delete_Click(object sender, RoutedEventArgs e)
+        {
+            delete_filter();
+        }
+
+        private void mn_delete_filter_Click(object sender, RoutedEventArgs e)
+        {
+            delete_filter();
         }
 
         private void dg_filter_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -500,6 +578,130 @@ namespace LogTool
         private void dg_log_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             add_filter();
+        }
+
+        private string open_log_file()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "打开日志文件";
+            openFileDialog.Filter = "日志文件|*.log;*.txt|所有文件|*.*";
+            openFileDialog.FileName = string.Empty;
+            openFileDialog.FilterIndex = 1;
+            // openFileDialog.Multiselect = true;
+            openFileDialog.RestoreDirectory = true;
+            openFileDialog.DefaultExt = "log";
+            if (openFileDialog.ShowDialog() == false)
+            {
+                return "";
+            }
+
+            return openFileDialog.FileName;
+        }
+
+        private void mn_open_Click(object sender, RoutedEventArgs e)
+        {
+            if (!serial.is_open)
+            {
+                string log_file = open_log_file();
+                if (log_file.Equals(""))
+                {
+                    return;
+                }
+
+                read_log_data(log_file);
+
+                analys_log_data();
+            }
+            else
+            {
+                MessageBox.Show("请先关闭串口再进行日志分析");
+            }
+        }
+
+        private void mn_refresh_log_Click(object sender, RoutedEventArgs e)
+        {
+            if (!serial.is_open)
+            {
+                read_log_data(log_data_file_name);
+
+                analys_log_data();
+            }
+        }
+
+        private void mn_quit_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void mn_swith_filter_Click(object sender, RoutedEventArgs e)
+        {
+            switch_filter_show_state();
+        }
+
+        private void mn_zoom_in_Click(object sender, RoutedEventArgs e)
+        {
+            // todo
+        }
+
+        private void mn_zoom_out_Click(object sender, RoutedEventArgs e)
+        {
+            // todo
+        }
+
+        private void mn_reset_zoom_Click(object sender, RoutedEventArgs e)
+        {
+            // todo
+        }
+
+        private void mn_enable_all_filters_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < filters.Count; i++)
+            {
+                filters[i].Is_enable = true;
+            }
+        }
+
+        private void mn_disable_all_filters_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < filters.Count; i++)
+            {
+                filters[i].Is_enable = false;
+            }
+        }
+
+        private void mn_find_Click(object sender, RoutedEventArgs e)
+        {
+            log_add_error("guofan - todo");
+        }
+
+        private void mn_pre_Click(object sender, RoutedEventArgs e)
+        {
+            log_add_error("guofan - todo");
+        }
+
+        private void mn_next_Click(object sender, RoutedEventArgs e)
+        {
+            log_add_error("guofan - todo");
+        }
+
+        private void mn_goto_Click(object sender, RoutedEventArgs e)
+        {
+            log_add_error("guofan - todo");
+        }
+
+        private void mn_settings_Click(object sender, RoutedEventArgs e)
+        {
+            log_add_error("guofan - todo");
+        }
+
+        private void mn_help_Click(object sender, RoutedEventArgs e)
+        {
+            log_add_error("guofan - todo");
+        }
+
+        private void mn_about_Click(object sender, RoutedEventArgs e)
+        {
+            log_add_error("guofan - todo");
         }
     }
 
