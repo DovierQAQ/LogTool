@@ -31,7 +31,7 @@ namespace LogTool
             InitializeComponent();
         }
 
-        string window_title = "GuoFan Log Tool";
+        static string window_title = "GuoFan Log Tool";
 
         static GFSerial serial = null;
 
@@ -90,6 +90,7 @@ namespace LogTool
             cb_com.IsEnabled = true;
             cb_baud.IsEnabled = true;
             mn_edit.IsEnabled = true;
+            Title = window_title + " - " + log_data_file_name;
         }
 
         private void close_state()
@@ -98,6 +99,7 @@ namespace LogTool
             cb_com.IsEnabled = false;
             cb_baud.IsEnabled = false;
             mn_edit.IsEnabled = false;
+            Title = window_title;
         }
 
         private void btn_com_open_Click(object sender, RoutedEventArgs e)
@@ -110,7 +112,7 @@ namespace LogTool
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("无法关闭串口");
+                    MessageBox.Show("无法关闭串口", "错误");
                     return;
                 }
 
@@ -126,7 +128,7 @@ namespace LogTool
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("无法打开串口");
+                    MessageBox.Show("无法打开串口", "错误");
                     return;
                 }
 
@@ -416,7 +418,7 @@ namespace LogTool
             }
             catch (Exception ex)
             {
-                MessageBox.Show("编辑过滤器：" + ex.Message);
+                MessageBox.Show("编辑过滤器：" + ex.Message, "错误");
             }
         }
 
@@ -433,7 +435,7 @@ namespace LogTool
             }
             else
             {
-                MessageBox.Show("未选定任何过滤器");
+                MessageBox.Show("未选定任何过滤器", "提示");
             }
         }
 
@@ -489,6 +491,7 @@ namespace LogTool
                 string fileName = ((Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
 
                 read_log_data(fileName);
+                Title = window_title + " - " + log_data_file_name;
 
                 analys_log_data();
             }
@@ -515,12 +518,13 @@ namespace LogTool
                     }
 
                     read_log_data(log_file);
+                    Title = window_title + " - " + log_data_file_name;
 
                     analys_log_data();
                 }
                 else
                 {
-                    MessageBox.Show("请先关闭串口再进行日志分析");
+                    MessageBox.Show("请先关闭串口再进行日志分析", "提示");
                 }
             }
             else if (e.Key == Key.F && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
@@ -568,7 +572,7 @@ namespace LogTool
             }
             else
             {
-                MessageBox.Show("请先选中需删除的过滤器");
+                MessageBox.Show("请先选中需删除的过滤器", "提示");
             }
         }
 
@@ -629,6 +633,7 @@ namespace LogTool
                 }
 
                 read_log_data(log_file);
+                Title = window_title + " - " + log_data_file_name;
 
                 analys_log_data();
             }
@@ -692,6 +697,12 @@ namespace LogTool
         int find_index = 0;
         private void find_text(bool rev = false)
         {
+            if (serial.is_open)
+            {
+                MessageBox.Show("日志采集过程，编辑功能禁用", "抱歉");
+                return;
+            }
+
             if (FindText.filter.Text.Length > 0)
             {
                 if (is_show_filtered)
@@ -725,7 +736,7 @@ namespace LogTool
                     }
                 }
 
-                MessageBox.Show("已查找至文件开头");
+                MessageBox.Show("已查找至文件开头", "提示");
                 find_index = logItems.Count-1;
             }
             else
@@ -753,6 +764,12 @@ namespace LogTool
 
         private void begin_find()
         {
+            if (serial.is_open)
+            {
+                MessageBox.Show("日志采集过程，编辑功能禁用", "抱歉");
+                return;
+            }
+
             FindText find;
             if (selected_item != null)
             {
