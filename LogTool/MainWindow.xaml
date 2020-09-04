@@ -128,17 +128,18 @@
                     </StackPanel>
                     <DataGrid x:Name="dg_filter" ItemsSource="{Binding}" IsReadOnly="True" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" 
                               HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas" 
-                              MouseDoubleClick="dg_filter_MouseDoubleClick" MouseLeftButtonUp="dg_filter_MouseLeftButtonUp" SelectionUnit="Cell">
+                              MouseDoubleClick="dg_filter_MouseDoubleClick" MouseLeftButtonUp="dg_filter_MouseLeftButtonUp" SelectionUnit="Cell" SizeChanged="dg_filter_SizeChanged">
                         <DataGrid.Columns>
                             <DataGridCheckBoxColumn Binding="{Binding Is_enable}"></DataGridCheckBoxColumn>
                             <DataGridTextColumn Binding="{Binding State}"></DataGridTextColumn>
-                            <DataGridTemplateColumn Width="550">
+                            <DataGridTemplateColumn x:Name="dgc_filter_text">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Text}" Foreground="{Binding Foreground}" Background="{Binding Background}"></TextBlock>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
+                            <DataGridTextColumn Binding="{Binding Match_count}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </DockPanel>

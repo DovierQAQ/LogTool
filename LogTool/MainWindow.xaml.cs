@@ -217,6 +217,10 @@ namespace LogTool
             log_data.Clear();
             log_data_filtered.Clear();
             log_data_mutex.ReleaseMutex();
+            foreach (var filter in filters)
+            {
+                filter.Match_count = 0;
+            }
         }
 
         static private void log_add_by_filters(string s)
@@ -230,6 +234,7 @@ namespace LogTool
                     LogItem item = new LogItem(s, filter.Foreground, filter.Background);
                     log_add_item(item);
                     log_filtered_add_item(item);
+                    filter.Match_count++;
                 }
             }
             if (!is_match)
@@ -828,6 +833,14 @@ namespace LogTool
         {
             About about = new About();
             about.Show();
+        }
+
+        private void dg_filter_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (dg_filter.ActualWidth - 30 > 0)
+            {
+                dgc_filter_text.Width = dg_filter.ActualWidth - 100;
+            }
         }
     }
 

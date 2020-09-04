@@ -92,7 +92,7 @@ namespace LogTool
                     Filter item = new Filter();
 
                     item.Foreground = Brushes.Black;
-                    item.Background = Brushes.White;
+                    item.Background = null;
 
                     item.Is_enable = xe.GetAttribute("enabled").ToString().Equals("y");
                     item.Text = xe.GetAttribute("text").ToString();
@@ -278,6 +278,8 @@ namespace LogTool
                     }
                 }
             }
+
+            public int Match_count { get; set; }
 
             private void refresh_state()
             {

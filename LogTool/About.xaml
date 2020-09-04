@@ -10,10 +10,11 @@
         <DockPanel>
             <DockPanel DockPanel.Dock="Top" Height="160">
                 <DockPanel DockPanel.Dock="Left" LastChildFill="False">
-                    <Image x:Name="img_icon" DockPanel.Dock="Top" Source="iconDo_ow.ico" Height="100" Width="100" Margin="20"></Image>
+                    <Image x:Name="img_icon" DockPanel.Dock="Top" Source="iconDo_ow.ico" Height="100" Width="100" Margin="20" MouseRightButtonUp="img_icon_MouseRightButtonUp"></Image>
                 </DockPanel>
                 <TextBlock x:Name="tb_info" Margin="0, 20, 0, 0"></TextBlock>
             </DockPanel>
+            <Canvas x:Name="cv_game" DockPanel.Dock="Bottom"></Canvas>
         </DockPanel>
     </Grid>
 </Window>
