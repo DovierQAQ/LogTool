@@ -27,7 +27,7 @@ namespace LogTool
             InitializeComponent();
 
             cc_foreground.SelectedColor = Colors.Black;
-            cc_background.SelectedColor = Colors.White;
+            cc_background.SelectedColor = Colors.Transparent;
         }
 
         public AddFilter(string s)
@@ -36,7 +36,7 @@ namespace LogTool
 
             tb_filter_text.Text = s;
             cc_foreground.SelectedColor = Colors.Black;
-            cc_background.SelectedColor = Colors.White;
+            cc_background.SelectedColor = Colors.Transparent;
         }
 
         public AddFilter(FilterUtils.Filter filter)
@@ -107,6 +107,11 @@ namespace LogTool
             {
                 tb_filter_text.Background = new SolidColorBrush((Color)cc_background.SelectedColor);
             }
+        }
+
+        private void tb_filter_text_Loaded(object sender, RoutedEventArgs e)
+        {
+            Keyboard.Focus(tb_filter_text);
         }
     }
 }

@@ -135,6 +135,7 @@ namespace LogTool
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.AppendChild(xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null));
             XmlElement root = xmlDoc.CreateElement("GuoFanLogTool");
+            root.SetAttribute("version", "1.0");
             xmlDoc.AppendChild(root);
             XmlElement filter_list = xmlDoc.CreateElement("filters");
             root.AppendChild(filter_list);

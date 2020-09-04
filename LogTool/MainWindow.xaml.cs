@@ -176,7 +176,10 @@ namespace LogTool
                 log_add_by_filters(recv_items[i]);
             }
 
-            dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
+            if (dg_log.Items.Count > 0)
+            {
+                dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
+            }
         }
 
         private void serial_send(byte[] data)
@@ -251,17 +254,17 @@ namespace LogTool
 
         private void log_add_error(string s)
         {
-            log_add_item(new LogItem(s, Brushes.DarkRed, Brushes.White));
+            log_add_item(new LogItem(s, Brushes.DarkRed, null));
         }
 
         private void log_add_info(string s)
         {
-            log_add_item(new LogItem(s, Brushes.DarkCyan, Brushes.White));
+            log_add_item(new LogItem(s, Brushes.DarkCyan, null));
         }
 
         private void log_add_normal(string s)
         {
-            log_add_item(new LogItem(s, Brushes.Black, Brushes.White));
+            log_add_item(new LogItem(s, Brushes.Black, null));
         }
 
         private void serial_send_data(string data)
@@ -367,9 +370,14 @@ namespace LogTool
                 mn_swith_filter.IsChecked = true;
             }
 
+            find_index = 0;
+
             if (serial.is_open)
             {
-                dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
+                if (dg_log.Items.Count > 0)
+                {
+                    dg_log.ScrollIntoView(dg_log.Items[dg_log.Items.Count - 1]);
+                }
             }
             else
             {
@@ -515,6 +523,18 @@ namespace LogTool
                     MessageBox.Show("请先关闭串口再进行日志分析");
                 }
             }
+            else if (e.Key == Key.F && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+            {
+                begin_find();
+            }
+            else if (e.Key == Key.F2)
+            {
+                find_text(true);
+            }
+            else if (e.Key == Key.F3)
+            {
+                find_text();
+            }
             else if (e.Key == Key.F5)
             {
                 if (!serial.is_open)
@@ -640,17 +660,17 @@ namespace LogTool
 
         private void mn_zoom_in_Click(object sender, RoutedEventArgs e)
         {
-            // todo
+            log_add_error("guofan - todo");
         }
 
         private void mn_zoom_out_Click(object sender, RoutedEventArgs e)
         {
-            // todo
+            log_add_error("guofan - todo");
         }
 
         private void mn_reset_zoom_Click(object sender, RoutedEventArgs e)
         {
-            // todo
+            log_add_error("guofan - todo");
         }
 
         private void mn_enable_all_filters_Click(object sender, RoutedEventArgs e)
@@ -669,19 +689,95 @@ namespace LogTool
             }
         }
 
+        int find_index = 0;
+        private void find_text(bool rev = false)
+        {
+            if (FindText.filter.Text.Length > 0)
+            {
+                if (is_show_filtered)
+                {
+                    find_in_log_data(ref log_data_filtered, rev);
+                }
+                else
+                {
+                    find_in_log_data(ref log_data, rev);
+                }
+            }
+        }
+
+        private void find_in_log_data(ref ObservableCollection<LogItem> logItems, bool rev)
+        {
+            if (rev)
+            {
+                if (find_index == 0)
+                {
+                    find_index = logItems.Count - 1;
+                }
+
+                for (int i = find_index; i >= 0; i--)
+                {
+                    if (FilterUtils.Filter_match(logItems[i].Text, FindText.filter))
+                    {
+                        find_index = i - 1;
+                        dg_log.SelectedItem = logItems[i];
+                        dg_log.ScrollIntoView(logItems[i]);
+                        return;
+                    }
+                }
+
+                MessageBox.Show("已查找至文件开头");
+                find_index = logItems.Count-1;
+            }
+            else
+            {
+                if (find_index == logItems.Count - 1)
+                {
+                    find_index = 0;
+                }
+
+                for (int i = find_index; i < logItems.Count; i++)
+                {
+                    if (FilterUtils.Filter_match(logItems[i].Text, FindText.filter))
+                    {
+                        find_index = i + 1;
+                        dg_log.SelectedItem = logItems[i];
+                        dg_log.ScrollIntoView(logItems[i]);
+                        return;
+                    }
+                }
+
+                MessageBox.Show("已查找至文件末尾");
+                find_index = 0;
+            }
+        }
+
+        private void begin_find()
+        {
+            FindText find;
+            if (selected_item != null)
+            {
+                find = new FindText(selected_item.Text, delegate { find_text(); });
+            }
+            else
+            {
+                find = new FindText(delegate { find_text(); });
+            }
+            find.ShowDialog();
+        }
+
         private void mn_find_Click(object sender, RoutedEventArgs e)
         {
-            log_add_error("guofan - todo");
+            begin_find();
         }
 
         private void mn_pre_Click(object sender, RoutedEventArgs e)
         {
-            log_add_error("guofan - todo");
+            find_text(true);
         }
 
         private void mn_next_Click(object sender, RoutedEventArgs e)
         {
-            log_add_error("guofan - todo");
+            find_text();
         }
 
         private void mn_goto_Click(object sender, RoutedEventArgs e)
@@ -716,7 +812,7 @@ namespace LogTool
         {
             Text = text;
             Foreground = Brushes.Black;
-            Background = Brushes.White;
+            Background = null;
         }
 
         public LogItem(string text, Brush fg, Brush bg)
