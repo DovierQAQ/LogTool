@@ -71,9 +71,9 @@ namespace LogTool
 
             Title = window_title;
 
-            if (!Directory.Exists("log"))
+            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "log"))
             {
-                Directory.CreateDirectory("log");
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "log");
             }
 
             open_state();
@@ -84,13 +84,25 @@ namespace LogTool
             open_state();
         }
 
+        private void refresh_title()
+        {
+            if (log_data_file_name.Equals(""))
+            {
+                Title = window_title;
+            }
+            else
+            {
+                Title = window_title + " - " + log_data_file_name;
+            }
+        }
+
         private void open_state()
         {
             btn_com_open.Content = "打开串口";
             cb_com.IsEnabled = true;
             cb_baud.IsEnabled = true;
             mn_edit.IsEnabled = true;
-            Title = window_title + " - " + log_data_file_name;
+            refresh_title();
         }
 
         private void close_state()
@@ -124,7 +136,7 @@ namespace LogTool
                 {
                     serial.open_serial(cb_com.Text, int.Parse(cb_baud.Text));
                     log_clear();
-                    log_file_name = "log/" + cb_com.Text + "_" + TimeUtils.GetFileTimeString() + ".log";
+                    log_file_name = AppDomain.CurrentDomain.BaseDirectory + "log/" + cb_com.Text + "_" + TimeUtils.GetFileTimeString() + ".log";
                 }
                 catch (Exception)
                 {
@@ -491,7 +503,7 @@ namespace LogTool
                 string fileName = ((Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
 
                 read_log_data(fileName);
-                Title = window_title + " - " + log_data_file_name;
+                refresh_title();
 
                 analys_log_data();
             }
@@ -518,7 +530,7 @@ namespace LogTool
                     }
 
                     read_log_data(log_file);
-                    Title = window_title + " - " + log_data_file_name;
+                    refresh_title();
 
                     analys_log_data();
                 }
@@ -633,7 +645,7 @@ namespace LogTool
                 }
 
                 read_log_data(log_file);
-                Title = window_title + " - " + log_data_file_name;
+                refresh_title();
 
                 analys_log_data();
             }
