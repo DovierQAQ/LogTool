@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LogTool"
         mc:Ignorable="d"
-        Title="GuoFan Log Tool" Height="850" Width="800" Loaded="Window_Loaded" KeyDown="Window_KeyDown">
+        Title="GuoFan Log Tool" Height="850" Width="800" Loaded="Window_Loaded" KeyDown="Window_KeyDown" Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace LogTool
 {
@@ -64,12 +65,36 @@ namespace LogTool
                 Info_write_line("(ノ๑`ȏ´๑)ノ︵⌨");
             }
         }
+
+        // game settings
+        private Point GAMESIZE = new Point(4, 4);
+
+        Game2048 game2048;
+        private DispatcherTimer timer_2048 = null;
         private void Game_init()
         {
             this.Height += 360;
             cv_game.Background = Brushes.Black;
 
+            game2048 = new Game2048(GAMESIZE);
+
+            timer_2048 = new DispatcherTimer();
+            timer_2048.Interval = TimeSpan.FromMilliseconds(10);
+            timer_2048.Tick += new EventHandler(Timer_2048_callback);
+            timer_2048.Start();
+        }
+
+        private void Timer_2048_callback(object sender, EventArgs e)
+        {
             // todo
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (timer_2048 != null)
+            {
+                timer_2048.Stop();
+            }
         }
 
         private void Draw_clear()
@@ -112,14 +137,26 @@ namespace LogTool
             cv_game.Dispatcher.Invoke(new Action(delegate { cv_game.Children.Add(myPath); }));
         }
 
-        static private Brush COLOR_CELL = new SolidColorBrush(Color.FromRgb(200, 200, 200));
-        static private int GAPSIZE = 5;
-        static private int BOARDRIGHT = 4;
-        static private int BOARDBOTTOM = 4;
-        static private Point BOARDSIZE = new Point(BOARDRIGHT, BOARDBOTTOM);
-        static private int STARTCARDAMOUNT = 2;
-        static private int STARTCARDNUMBER = 2;
-        static private int AWARDNUMBER = 2;
+        private void cv_game_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Playground = new Point(cv_game.ActualWidth, cv_game.ActualHeight);
+        }
+
+        static private void KnuthDurstenfeldShuffle<T>(List<T> list)
+        {
+            int currentIndex;
+            T tempValue;
+            Random random = new Random();
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                currentIndex = random.Next(0, i + 1);
+                tempValue = list[currentIndex];
+                list[currentIndex] = list[i];
+                list[i] = tempValue;
+            }
+        }
+
+        private Point Playground { get; set; }
 
         private enum Direction
         {
@@ -132,14 +169,40 @@ namespace LogTool
 
         private class Game2048
         {
+            List<List<Card>> cards = new List<List<Card>>();
+            Point size;
 
+            public Game2048(Point playground, int card_amount = 2, int card_number = 2)
+            {
+                size = playground;
+
+                for (int i = 0; i < size.X; i++)
+                {
+                    cards.Add(new List<Card>());
+                    for (int j = 0; j < size.Y; j++)
+                    {
+                        cards[i].Add(new Card(new Point(i, j), 0));
+                    }
+                }
+
+                List<int> card_index = new List<int>();
+                for (int i = 0; i < size.X * size.Y; i++)
+                {
+                    card_index.Add(i);
+                }
+                KnuthDurstenfeldShuffle(card_index);
+                for (int i = 0; i < card_amount; i++)
+                {
+                    int x = i % (int)size.X;
+                    int y = (i - x) / (int)size.Y;
+                    cards[x][y].Number = card_number;
+                }
+            }
         }
 
         private class Card
         {
-            Rect card;
-            Point card_center;
-            Point position;
+            public Point Position { get; set; }
             int number;
             public int Number
             {
@@ -153,19 +216,21 @@ namespace LogTool
                     if (value != 0)
                     {
                         Level = (int)Math.Log(value);
-                        Card_color = new SolidColorBrush(Color.FromRgb((byte)(Level * 15), (byte)(200 - Level * 15), (byte)(255 - Level * 15)));
                     }
                     else
                     {
                         Level = 0;
-                        Card_color = COLOR_CELL;
                     }
-                    // Number_size = RECTSIZE - Level * 5;
                 }
             }
-            public int Level { get; set; }
-            public int Number_size { get; set; }
-            public Brush Card_color { get; set; }
+
+            public int Level { get; private set; }
+
+            public Card(Point pos, int num)
+            {
+                Position = pos;
+                Number = num;
+            }
         }
     }
 }

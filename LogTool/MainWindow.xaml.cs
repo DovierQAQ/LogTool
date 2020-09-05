@@ -3,6 +3,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,7 +32,7 @@ namespace LogTool
             InitializeComponent();
         }
 
-        static string window_title = "GuoFan Log Tool";
+        static string window_title = "GuoFan Log Tool V1.0";
 
         static GFSerial serial = null;
 
@@ -77,6 +78,19 @@ namespace LogTool
             }
 
             open_state();
+
+            string saved_width = ConfigurationManager.AppSettings["window_width"];
+            string saved_height = ConfigurationManager.AppSettings["window_height"];
+            try
+            {
+                Width = int.Parse(saved_width);
+                Height = int.Parse(saved_height);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("w: " + saved_width + ", h: " + saved_height);
+                Console.WriteLine("window size: " + ex.Message);
+            }
         }
 
         private void serial_close_callback()
@@ -837,10 +851,23 @@ namespace LogTool
 
         private void dg_filter_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (dg_filter.ActualWidth - 30 > 0)
+            int count_width = 90;
+            if (dg_filter.ActualWidth - count_width > 0)
             {
-                dgc_filter_text.Width = dg_filter.ActualWidth - 100;
+                dgc_filter_text.Width = dg_filter.ActualWidth - count_width;
             }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+            configuration.AppSettings.Settings["window_width"].Value = ActualWidth.ToString();
+            configuration.AppSettings.Settings["window_height"].Value = ActualHeight.ToString();
+
+            configuration.Save();
+
+            Environment.Exit(0);
         }
     }
 

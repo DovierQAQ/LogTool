@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LogTool"
         mc:Ignorable="d"
-        Title="About" Height="200" Width="400" Loaded="Window_Loaded">
+        Title="About" Height="200" Width="400" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
         <DockPanel>
             <DockPanel DockPanel.Dock="Top" Height="160">
@@ -14,7 +14,7 @@
                 </DockPanel>
                 <TextBlock x:Name="tb_info" Margin="0, 20, 0, 0"></TextBlock>
             </DockPanel>
-            <Canvas x:Name="cv_game" DockPanel.Dock="Bottom"></Canvas>
+            <Canvas x:Name="cv_game" DockPanel.Dock="Bottom" SizeChanged="cv_game_SizeChanged"></Canvas>
         </DockPanel>
     </Grid>
 </Window>
