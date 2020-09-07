@@ -43,7 +43,7 @@ namespace LogTool
         string log_buffer = "";
         string log_file_name = "";
 
-        static string file_data = "";
+        static string[] log_data_lines;
 
         static public ObservableCollection<FilterUtils.Filter> filters = new ObservableCollection<FilterUtils.Filter>();
 
@@ -90,6 +90,17 @@ namespace LogTool
             {
                 Console.WriteLine("w: " + saved_width + ", h: " + saved_height);
                 Console.WriteLine("window size: " + ex.Message);
+            }
+
+            string saved_com = ConfigurationManager.AppSettings["selected_com"];
+            string saved_baud = ConfigurationManager.AppSettings["selected_baud"];
+            if (!saved_com.Equals(""))
+            {
+                cb_com.Text = saved_com;
+            }
+            if (!saved_baud.Equals(""))
+            {
+                cb_baud.Text = saved_baud;
             }
         }
 
@@ -489,11 +500,10 @@ namespace LogTool
         {
             try
             {
-                if (!serial.is_open && !file_data.Equals(""))
+                if (!serial.is_open && log_data_lines != null && log_data_lines.Length > 0)
                 {
-                    string[] lines = file_data.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
                     log_clear();
-                    foreach (var line in lines)
+                    foreach (var line in log_data_lines)
                     {
                         log_add_by_filters(line);
                     }
@@ -508,10 +518,16 @@ namespace LogTool
         static string log_data_file_name = "";
         static public void read_log_data(string file_name)
         {
+            if (!File.Exists(file_name))
+            {
+                return;
+            }
+            string file_data = "";
             using (StreamReader streamReader = new StreamReader(file_name, Encoding.Default))
             {
                 file_data = streamReader.ReadToEnd();
             }
+            log_data_lines = file_data.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             log_data_file_name = file_name;
         }
 
@@ -734,7 +750,7 @@ namespace LogTool
                 return;
             }
 
-            if (FindText.filter.Text.Length > 0)
+            if (FindText.filter != null && FindText.filter.Text.Length > 0)
             {
                 if (is_show_filtered)
                 {
@@ -864,6 +880,8 @@ namespace LogTool
 
             configuration.AppSettings.Settings["window_width"].Value = ActualWidth.ToString();
             configuration.AppSettings.Settings["window_height"].Value = ActualHeight.ToString();
+            configuration.AppSettings.Settings["selected_com"].Value = cb_com.Text;
+            configuration.AppSettings.Settings["selected_baud"].Value = cb_baud.Text;
 
             configuration.Save();
 

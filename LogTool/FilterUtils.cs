@@ -169,7 +169,6 @@ namespace LogTool
                     if (is_enable != value)
                     {
                         is_enable = value;
-                        MainWindow.analys_log_data();
                         PropertyChanged(this, new PropertyChangedEventArgs("Is_enable"));
                     }
                 } 
@@ -186,7 +185,6 @@ namespace LogTool
                     if (state != value)
                     {
                         state = value;
-                        MainWindow.analys_log_data();
                         PropertyChanged(this, new PropertyChangedEventArgs("State"));
                     }
                 }
@@ -203,7 +201,6 @@ namespace LogTool
                     if (text != value)
                     {
                         text = value;
-                        MainWindow.analys_log_data();
                         PropertyChanged(this, new PropertyChangedEventArgs("Text"));
                     }
                 }
@@ -220,7 +217,6 @@ namespace LogTool
                     if (foreground != value)
                     {
                         foreground = value;
-                        MainWindow.analys_log_data();
                         PropertyChanged(this, new PropertyChangedEventArgs("Foreground"));
                     }
                 }
@@ -237,7 +233,6 @@ namespace LogTool
                     if (background != value)
                     {
                         background = value;
-                        MainWindow.analys_log_data();
                         PropertyChanged(this, new PropertyChangedEventArgs("Background"));
                     }
                 }
@@ -254,7 +249,6 @@ namespace LogTool
                     if (is_case_sensitive != value)
                     {
                         is_case_sensitive = value;
-                        MainWindow.analys_log_data();
                         refresh_state();
                         PropertyChanged(this, new PropertyChangedEventArgs("Is_case_sensitive"));
                     }
@@ -272,14 +266,27 @@ namespace LogTool
                     if (is_regex != value)
                     {
                         is_regex = value;
-                        MainWindow.analys_log_data();
                         refresh_state();
                         PropertyChanged(this, new PropertyChangedEventArgs("Is_regex"));
                     }
                 }
             }
-
-            public int Match_count { get; set; }
+            private int match_count;
+            public int Match_count 
+            { 
+                get
+                {
+                    return match_count;
+                }
+                set
+                {
+                    if (match_count != value)
+                    {
+                        match_count = value;
+                        PropertyChanged(this, new PropertyChangedEventArgs("Match_count"));
+                    }
+                }
+            }
 
             private void refresh_state()
             {
