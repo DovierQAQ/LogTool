@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -84,6 +85,7 @@ namespace LogTool
         Int64 time_to_print = 0;
         const int FRAME_TIME = 7;
         const int GAP_WIDTH = 3;
+        const int MOVE_SPEED = 60;
         bool is_closed = false;
 
         static Brush COLOR_CELL = Brushes.AliceBlue;
@@ -122,22 +124,64 @@ namespace LogTool
 
         private void Draw_game()
         {
-            Draw_clear();
 
             int w_unit = (int)(Playground.X / (game2048.size.X * 2));
             int h_unit = (int)(Playground.Y / (game2048.size.Y * 2));
             int card_width = (int)(Playground.X / game2048.size.X) - GAP_WIDTH;
             int card_height = (int)(Playground.Y / game2048.size.Y) - GAP_WIDTH;
 
-            foreach (List<Card> card_line in game2048.cards)
+            if (game2048.card_moves.Count > 0)
             {
-                foreach (Card card in card_line)
+                game2048.card_move_mutex.WaitOne();
+
+                CardMovement card_move = game2048.card_moves[0];
+                if (!card_move.Is_stop)
                 {
-                    Point card_center = new Point((1 + 2 * card.Position.X) * w_unit, (1 + 2 * card.Position.Y) * h_unit);
-                    CardVisual cardVisual = new CardVisual(card, card_center, card_width, card_height);
+                    Point card_center = Calc_card_center(card_move.Origin_card, w_unit, h_unit);
+
+                    card_move.Step(card_center, card_width, card_height, MOVE_SPEED);
+                    if (!card_move.Is_in)
+                    {
+                        Card card_cover = new Card(card_move.Origin_card.Position, 0);
+                        CardVisual cardVisual = new CardVisual(card_cover, card_center, card_width, card_height);
+                        cv_game.Children.Add(cardVisual.button);
+                        cv_game.Children.Add(card_move.Current_card.button);
+                        card_move.Is_in = true;
+                    }
+                }
+                if (card_move.Is_stop)
+                {
+                    Point card_center = Calc_card_center(card_move.Dest_card, w_unit, h_unit);
+
+                    Card card_cover = new Card(card_move.Dest_card.Position, card_move.Dest_card.Number);
+                    CardVisual cardVisual = new CardVisual(card_cover, card_center, card_width, card_height);
                     cv_game.Children.Add(cardVisual.button);
+
+                    cv_game.Children.Remove(card_move.Current_card.button);
+                    game2048.card_moves.Remove(card_move);
+                }
+
+                game2048.card_move_mutex.ReleaseMutex();
+            }
+            else
+            {
+                Draw_clear();
+
+                foreach (List<Card> card_line in game2048.cards)
+                {
+                    foreach (Card card in card_line)
+                    {
+                        Point card_center = Calc_card_center(card, w_unit, h_unit);
+                        CardVisual cardVisual = new CardVisual(card, card_center, card_width, card_height);
+                        cv_game.Children.Add(cardVisual.button);
+                    }
                 }
             }
+        }
+
+        private Point Calc_card_center(Card card, int w_unit, int h_unit)
+        {
+            return new Point((1 + 2 * card.Position.X) * w_unit, (1 + 2 * card.Position.Y) * h_unit);
         }
 
         private void Draw_clear()
@@ -218,21 +262,13 @@ namespace LogTool
                 switch (e.Key)
                 {
                     case Key.W:
-                    case Key.Up:
-                        game2048.Move(Direction.UP);
-                        break;
+                    case Key.Up: game2048.Move(Direction.UP); break;
                     case Key.S:
-                    case Key.Down:
-                        game2048.Move(Direction.DOWN);
-                        break;
+                    case Key.Down: game2048.Move(Direction.DOWN); break;
                     case Key.A:
-                    case Key.Left:
-                        game2048.Move(Direction.LEFT);
-                        break;
+                    case Key.Left: game2048.Move(Direction.LEFT); break;
                     case Key.D:
-                    case Key.Right:
-                        game2048.Move(Direction.RIGHT);
-                        break;
+                    case Key.Right: game2048.Move(Direction.RIGHT); break;
                 }
             }
         }
@@ -274,15 +310,6 @@ namespace LogTool
             }
         }
 
-        static private bool Is_direction_vertical(Direction direction)
-        {
-            if (direction == Direction.UP || direction == Direction.DOWN)
-            {
-                return true;
-            }
-            return false;
-        }
-
         static private Point Move_direction(Point point, Direction direction)
         {
             Point offset = Direction_to_offset(direction);
@@ -294,6 +321,10 @@ namespace LogTool
         {
             public List<List<Card>> cards = new List<List<Card>>();
             public Point size;
+            public List<CardMovement> card_moves = new List<CardMovement>();
+            public Mutex card_move_mutex = new Mutex();
+
+            Random random = new Random();
 
             public Game2048(Point playground, int card_amount = 2, int card_number = 2)
             {
@@ -310,7 +341,7 @@ namespace LogTool
 
                 for (int i = 0; i < card_amount; i++)
                 {
-                    Card_generate();
+                    Card_generate(card_number);
                 }
             }
 
@@ -339,7 +370,7 @@ namespace LogTool
 
                 if (is_move)
                 {
-                    Card_generate();
+                    Card_generate(2);
                 }
             }
 
@@ -362,27 +393,46 @@ namespace LogTool
                 Point dest_pos = Move_direction(card_pos, direction);
                 Card card_current = cards[(int)card_pos.X][(int)card_pos.Y];
                 Card card_dest = cards[(int)dest_pos.X][(int)dest_pos.Y];
-                if (card_current.Number == card_dest.Number)
+                if (card_current.Number != 0)
                 {
-                    card_dest.Number *= 2;
-                    card_current.Number = 0;
+                    if (card_current.Number == card_dest.Number)
+                    {
+                        CardMovement card_move = new CardMovement(new Card(card_current.Position, card_current.Number), direction);
 
-                    Card_move(dest_pos, direction);
-                    return true;
-                }
-                else if (card_dest.Number == 0)
-                {
-                    card_dest.Number = card_current.Number;
-                    card_current.Number = 0;
+                        card_dest.Number *= 2;
+                        card_current.Number = 0;
 
-                    Card_move(dest_pos, direction);
-                    return true;
+                        card_move.Dest_card = new Card(card_dest.Position, card_dest.Number);
+
+                        card_move_mutex.WaitOne();
+                        card_moves.Add(card_move);
+                        card_move_mutex.ReleaseMutex();
+
+                        Card_move(dest_pos, direction);
+                        return true;
+                    }
+                    else if (card_dest.Number == 0)
+                    {
+                        CardMovement card_move = new CardMovement(new Card(card_current.Position, card_current.Number), direction);
+
+                        card_dest.Number = card_current.Number;
+                        card_current.Number = 0;
+
+                        card_move.Dest_card = new Card(card_dest.Position, card_dest.Number);
+
+                        card_move_mutex.WaitOne();
+                        card_moves.Add(card_move);
+                        card_move_mutex.ReleaseMutex();
+
+                        Card_move(dest_pos, direction);
+                        return true;
+                    }
                 }
 
                 return false;
             }
 
-            private bool Card_generate(int other_number = 0, double other_number_rate = 0)
+            private bool Card_generate(int card_number, int other_number = 0, double other_number_rate = 0)
             {
                 List<int> card_index = new List<int>();
                 for (int i = 0; i < size.X * size.Y; i++)
@@ -391,11 +441,10 @@ namespace LogTool
                 }
                 KnuthDurstenfeldShuffle(card_index);
 
-                int number = 2;
+                int number = card_number;
                 if (other_number > 0)
                 {
-                    Random random = new Random();
-                    if (random.Next() % 100 <= other_number_rate * 100)
+                    if (random.Next(0, 99) <= other_number_rate * 100)
                     {
                         number = other_number;
                     }
@@ -456,16 +505,68 @@ namespace LogTool
             public Card Origin_card;
             public CardVisual Current_card;
             public Card Dest_card;
-            public bool is_moving;
+            public Direction direction;
+            public bool Is_in;
+            public bool Is_stop;
+
+            private int move_distance;
+
+            public CardMovement(Card origin, Direction dir)
+            {
+                Origin_card = origin;
+                direction = dir;
+                Is_in = false;
+                Is_stop = false;
+
+                move_distance = 0;
+            }
+
+            public void Step(Point center, int width, int height, int pix = 1)
+            {
+                if (Current_card == null)
+                {
+                    Current_card = new CardVisual(Origin_card, center, width, height);
+                }
+                else
+                {
+                    Current_card.Resize(width, height);
+                }
+
+                Current_card.Step(direction, pix);
+                move_distance += pix;
+                switch (direction)
+                {
+                    case Direction.UP:
+                    case Direction.DOWN:
+                        if (move_distance >= Current_card.button_height)
+                        {
+                            Is_stop = true;
+                        }
+                        break;
+                    case Direction.LEFT:
+                    case Direction.RIGHT:
+                        if (move_distance >= Current_card.button_width)
+                        {
+                            Is_stop = true;
+                        }
+                        break;
+                }
+            }
         }
 
         private class CardVisual
         {
             public Button button;
+            public Point button_center;
+            public int button_width;
+            public int button_height;
 
             public CardVisual(Card card, Point center, int width, int height)
             {
                 button = new Button();
+                button_center = center;
+                button_width = width;
+                button_height = height;
 
                 Brush card_color;
                 if (card.Number == 0)
@@ -478,7 +579,8 @@ namespace LogTool
                     button.Content = card.Number.ToString();
                 }
 
-                button.FontSize = Math.Min(width, height) - card.Level * 10;
+                int font_size = Math.Min(width, height) - card.Number.ToString().Length * 13; // todo
+                button.FontSize = font_size >= 10 ? font_size : 10;
                 button.Background = card_color;
                 button.Width = width;
                 button.Height = height;
@@ -492,6 +594,25 @@ namespace LogTool
             private Brush Calc_card_color(int level)
             {
                 return new SolidColorBrush(Color.FromRgb((byte)(level * 15), (byte)(200 - level * 15), (byte)(255 - level * 15)));
+            }
+
+            public void Resize(int width, int height)
+            {
+                button_width = width;
+                button_height = height;
+            }
+
+            public void Step(Direction direction, int pix)
+            {
+                Point offset = Direction_to_offset(direction);
+                offset.X *= pix;
+                offset.Y *= pix;
+                button_center.X += offset.X;
+                button_center.Y += offset.Y;
+
+                Point begin = new Point(button_center.X - button_width / 2, button_center.Y - button_height / 2);
+                Canvas.SetLeft(button, begin.X);
+                Canvas.SetTop(button, begin.Y);
             }
         }
     }

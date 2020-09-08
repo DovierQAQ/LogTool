@@ -30,6 +30,19 @@ namespace LogTool
         public MainWindow()
         {
             InitializeComponent();
+
+            string saved_width = ConfigurationManager.AppSettings["window_width"];
+            string saved_height = ConfigurationManager.AppSettings["window_height"];
+            try
+            {
+                Width = int.Parse(saved_width);
+                Height = int.Parse(saved_height);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("w: " + saved_width + ", h: " + saved_height);
+                Console.WriteLine("window size: " + ex.Message);
+            }
         }
 
         static string window_title = "GuoFan Log Tool V1.0";
@@ -78,19 +91,6 @@ namespace LogTool
             }
 
             open_state();
-
-            string saved_width = ConfigurationManager.AppSettings["window_width"];
-            string saved_height = ConfigurationManager.AppSettings["window_height"];
-            try
-            {
-                Width = int.Parse(saved_width);
-                Height = int.Parse(saved_height);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("w: " + saved_width + ", h: " + saved_height);
-                Console.WriteLine("window size: " + ex.Message);
-            }
 
             string saved_com = ConfigurationManager.AppSettings["selected_com"];
             string saved_baud = ConfigurationManager.AppSettings["selected_baud"];
@@ -804,7 +804,7 @@ namespace LogTool
                     }
                 }
 
-                MessageBox.Show("已查找至文件末尾");
+                MessageBox.Show("已查找至文件末尾", "提示");
                 find_index = 0;
             }
         }
