@@ -10,7 +10,7 @@
         <DockPanel>
             <StackPanel DockPanel.Dock="Top" Margin="0, 30, 0, 0" Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="文本：" Margin="5"></TextBlock>
-                <TextBox x:Name="tb_find_text" Height="21" Width="500" VerticalContentAlignment="Center" Loaded="tb_find_text_Loaded"></TextBox>
+                <TextBox x:Name="tb_find_text" Height="21" Width="500" VerticalContentAlignment="Center" Loaded="tb_find_text_Loaded" KeyDown="tb_find_text_KeyDown"></TextBox>
             </StackPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <CheckBox x:Name="cb_case_sensitive" Content="区分大小写" Margin="20, 0"></CheckBox>

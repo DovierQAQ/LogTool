@@ -36,7 +36,7 @@ namespace LogTool
         Action find_text_callback;
         static public FilterUtils.Filter filter;
 
-        private void btn_ok_Click(object sender, RoutedEventArgs e)
+        private void find_text()
         {
             filter = new FilterUtils.Filter();
             filter.Is_enable = true;
@@ -47,6 +47,11 @@ namespace LogTool
             Close();
         }
 
+        private void btn_ok_Click(object sender, RoutedEventArgs e)
+        {
+            find_text();
+        }
+
         private void btn_cancel_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -55,6 +60,14 @@ namespace LogTool
         private void tb_find_text_Loaded(object sender, RoutedEventArgs e)
         {
             Keyboard.Focus(tb_find_text);
+        }
+
+        private void tb_find_text_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                find_text();
+            }
         }
     }
 }

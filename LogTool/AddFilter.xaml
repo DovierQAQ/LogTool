@@ -16,7 +16,7 @@
             </StackPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="文本：" Margin="5"></TextBlock>
-                <TextBox x:Name="tb_filter_text" Height="21" Width="500" VerticalContentAlignment="Center" Loaded="tb_filter_text_Loaded"></TextBox>
+                <TextBox x:Name="tb_filter_text" Height="21" Width="500" VerticalContentAlignment="Center" Loaded="tb_filter_text_Loaded" KeyDown="tb_filter_text_KeyDown"></TextBox>
             </StackPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <CheckBox x:Name="cb_enable" Content="启用" Margin="20, 0" IsChecked="True"></CheckBox>

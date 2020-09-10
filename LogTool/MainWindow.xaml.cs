@@ -3,6 +3,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -180,14 +181,19 @@ namespace LogTool
             serial.serial_recv_data.Clear();
             serial.recv_data_mutex.ReleaseMutex();
 
+            string recv_string = Encoding.UTF8.GetString(recv_data).Replace("\r", "");
             buffer_mutex.WaitOne();
-            log_buffer += Encoding.UTF8.GetString(recv_data).Replace("\r", "");
+            log_buffer += recv_string;
             buffer_mutex.ReleaseMutex();
+            tb_recv_data.Dispatcher.Invoke(new Action(delegate { tb_recv_data.Text += recv_string; }));
         }
 
         private void log_show_callback(object sender, EventArgs e)
         {
-            buffer_mutex.WaitOne();
+            if (!buffer_mutex.WaitOne(10))
+            {
+                return;
+            }
             if (log_buffer.Equals(""))
             {
                 buffer_mutex.ReleaseMutex();

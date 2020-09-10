@@ -56,7 +56,7 @@
             </MenuItem>
         </Menu>
         <DockPanel Grid.Row="1">
-            <TextBox x:Name="tb_recv_data" DockPanel.Dock="Bottom" Margin="2" IsReadOnly="True"></TextBox>
+            <TextBox x:Name="tb_recv_data" Height="17" DockPanel.Dock="Bottom" Margin="2" IsReadOnly="True"></TextBox>
             <DataGrid x:Name="dg_log" ItemsSource="{Binding}" IsReadOnly="True" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" 
                       HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas" 
                       AllowDrop="True" Drop="dg_log_Drop" SelectionChanged="dg_log_SelectionChanged" MouseDoubleClick="dg_log_MouseDoubleClick">

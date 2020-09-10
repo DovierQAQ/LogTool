@@ -55,7 +55,7 @@ namespace LogTool
             change_filter = filter;
         }
 
-        private void btn_ok_Click(object sender, RoutedEventArgs e)
+        private void add_filter()
         {
             if (tb_filter_text.Text.Equals(""))
             {
@@ -88,6 +88,11 @@ namespace LogTool
             Close();
         }
 
+        private void btn_ok_Click(object sender, RoutedEventArgs e)
+        {
+            add_filter();
+        }
+
         private void btn_cancel_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -112,6 +117,14 @@ namespace LogTool
         private void tb_filter_text_Loaded(object sender, RoutedEventArgs e)
         {
             Keyboard.Focus(tb_filter_text);
+        }
+
+        private void tb_filter_text_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                add_filter();
+            }
         }
     }
 }
