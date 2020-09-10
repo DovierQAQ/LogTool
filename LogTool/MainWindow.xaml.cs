@@ -867,7 +867,7 @@ namespace LogTool
 
         private void dg_filter_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            int count_width = 90;
+            int count_width = 100;
             if (dg_filter.ActualWidth - count_width > 0)
             {
                 dgc_filter_text.Width = dg_filter.ActualWidth - count_width;

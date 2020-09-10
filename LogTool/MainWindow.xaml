@@ -131,7 +131,7 @@
                               MouseDoubleClick="dg_filter_MouseDoubleClick" MouseLeftButtonUp="dg_filter_MouseLeftButtonUp" SelectionUnit="Cell" SizeChanged="dg_filter_SizeChanged">
                         <DataGrid.Columns>
                             <DataGridCheckBoxColumn Binding="{Binding Is_enable}"></DataGridCheckBoxColumn>
-                            <DataGridTextColumn Binding="{Binding State}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Match_count}"></DataGridTextColumn>
                             <DataGridTemplateColumn x:Name="dgc_filter_text">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -139,7 +139,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Binding="{Binding Match_count}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding State}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </DockPanel>

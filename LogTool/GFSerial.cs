@@ -16,7 +16,6 @@ namespace LogTool
         static public PortsToDisplay ports = new PortsToDisplay();
         static private DispatcherTimer timer_refresh = null;
 
-        //public bool is_open = false;
         public Mutex recv_data_mutex = new Mutex();
         public List<byte> serial_recv_data = new List<byte>();
         public bool is_open = false;

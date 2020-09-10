@@ -71,6 +71,7 @@ namespace LogTool
         // game settings
         private Point GAMESIZE = new Point(4, 4);
         Game2048 game2048;
+        GameAI gameAI;
         private void Game_init()
         {
             this.Height += 360;
@@ -83,9 +84,10 @@ namespace LogTool
 
         Int64 time_last = 0;
         Int64 time_to_print = 0;
+        Int64 time_for_ai = 0;
         const int FRAME_TIME = 7;
         const int GAP_WIDTH = 3;
-        const int MOVE_SPEED = 60;
+        const int MOVE_SPEED = 70;
         bool is_closed = false;
 
         static Brush COLOR_CELL = Brushes.AliceBlue;
@@ -107,6 +109,18 @@ namespace LogTool
             if (time_spend >= FRAME_TIME)
             {
                 Draw_game();
+
+                time_last = time_now;
+            }
+
+            if (time_now - time_for_ai >= 500)
+            {
+                if (gameAI != null)
+                {
+                    gameAI.Go();
+                }
+
+                time_for_ai = time_now;
             }
 
             if (time_now - time_to_print > 1000)
@@ -257,7 +271,7 @@ namespace LogTool
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (game2048 != null)
+            if (game2048 != null && gameAI == null)
             {
                 switch (e.Key)
                 {
@@ -269,6 +283,9 @@ namespace LogTool
                     case Key.Left: game2048.Move(Direction.LEFT); break;
                     case Key.D:
                     case Key.Right: game2048.Move(Direction.RIGHT); break;
+                    case Key.Enter:
+                        gameAI = new GameAI(game2048);
+                        break;
                 }
             }
         }
@@ -345,8 +362,27 @@ namespace LogTool
                 }
             }
 
-            public void Move(Direction direction)
+            public Game2048(Point playground, List<List<Card>> from_cards)
             {
+                size = playground;
+                
+                for (int i = 0; i < size.X; i++)
+                {
+                    cards.Add(new List<Card>());
+                    for (int j = 0; j < size.Y; j++)
+                    {
+                        cards[i].Add(new Card(new Point(i, j), from_cards[i][j].Number));
+                    }
+                }
+            }
+
+            public bool Move(Direction direction, bool is_generate = true)
+            {
+                if (direction == Direction.STAY)
+                {
+                    return false;
+                }
+
                 bool is_move = false;
                 for (int i = 0; i < size.X; i++)
                 {
@@ -368,10 +404,12 @@ namespace LogTool
                     }
                 }
 
-                if (is_move)
+                if (is_move && is_generate)
                 {
                     Card_generate(2);
                 }
+
+                return is_move;
             }
 
             private bool Card_move(Point card_pos, Direction direction)
@@ -464,6 +502,152 @@ namespace LogTool
                 }
 
                 return false;
+            }
+        }
+
+        private class GameAI
+        {
+            Game2048 game;
+            int max_depth;
+
+            public GameAI(Game2048 game2048, int depth = 4)
+            {
+                game = game2048;
+                max_depth = depth;
+            }
+
+            public void Go()
+            {
+                var result = Alpha(game, Double.NegativeInfinity, Double.PositiveInfinity);
+                Console.WriteLine("result: " + result.Item2.ToString());
+                game.Move(result.Item2);
+            }
+
+            private Tuple<double, Direction> Alpha(Game2048 game2048, double alpha_val, double beta_val, int depth = 0)
+            {
+                if (depth >= max_depth)
+                {
+                    return new Tuple<double, Direction>(Evaluate(game2048), Direction.STAY);
+                }
+
+                double max_val = alpha_val;
+                Direction max_dir = Direction.STAY;
+                foreach (Direction dir in Enum.GetValues(typeof(Direction)))
+                {
+                    Game2048 attempt_game = new Game2048(game2048.size, game2048.cards);
+
+                    if (attempt_game.Move(dir, false))
+                    {
+                        double beta_now = Beta(attempt_game, max_val, beta_val, depth + 1);
+                        if (beta_now > max_val)
+                        {
+                            max_val = beta_now;
+                            max_dir = dir;
+                            if (max_val > beta_val)
+                            {
+                                return new Tuple<double, Direction>(max_val, max_dir);
+                            }
+                        }
+                    }
+                }
+
+                return new Tuple<double, Direction>(max_val, max_dir);
+            }
+
+            private double Beta(Game2048 game2048, double alpha_val, double beta_val, int depth)
+            {
+                if (depth >= max_depth)
+                {
+                    return Evaluate(game2048);
+                }
+
+                double min_val = beta_val;
+                for (int i = 0; i < game2048.size.X; i++)
+                {
+                    for (int j = 0; j < game2048.size.Y; j++)
+                    {
+                        if (game2048.cards[i][j].Number == 0)
+                        {
+                            Game2048 attempt_game = new Game2048(game2048.size, game2048.cards);
+
+                            attempt_game.cards[i][j].Number = 2;
+                            var alpha_now = Alpha(attempt_game, alpha_val, min_val, depth + 1);
+
+                            if (alpha_now.Item1 < min_val)
+                            {
+                                min_val = alpha_now.Item1;
+                            }
+                            if (alpha_val >= min_val)
+                            {
+                                return min_val;
+                            }
+
+                            // todo awardnumber
+                        }
+                    }
+                }
+
+                return min_val;
+            }
+
+            double weight_em = 1;
+            double weight_ml = 1;
+            double weight_mo = 0;
+
+            private double Evaluate(Game2048 game2048)
+            {
+                int empty_count = 0;
+                int max_level = 0;
+                foreach (List<Card> line in game2048.cards)
+                {
+                    foreach (Card card in line)
+                    {
+                        if (card.Number == 0)
+                        {
+                            empty_count++;
+                        }
+                        if (card.Level > max_level)
+                        {
+                            max_level = card.Level;
+                        }
+                    }
+                }
+
+                double em = empty_count * weight_em;
+                double ml = max_level * weight_ml;
+
+                int mono = 0;
+                for (int j = 0; j < game2048.size.Y; j++)
+                {
+                    List<int> index_x = new List<int>();
+                    for (int i = 0; i < game2048.size.X; i++)
+                    {
+                        index_x.Add(i);
+                    }
+                    if (j % 2 != 0)
+                    {
+                        index_x.Reverse();
+                    }
+
+                    for (int i = 0; i < game2048.size.X; i++)
+                    {
+                        int y = j;
+                        int x = index_x[i];
+                        if (y > 0 && i == 0)
+                        {
+                            mono += game2048.cards[x][y].Level - game2048.cards[x][y - 1].Level;
+                        }
+                        if (i > 0)
+                        {
+                            int x_pre = index_x[i - 1];
+                            mono += game2048.cards[x][y].Level - game2048.cards[x_pre][y].Level;
+                        }
+                    }
+                }
+
+                double mo = mono * weight_mo;
+
+                return em + ml + mo;
             }
         }
 
