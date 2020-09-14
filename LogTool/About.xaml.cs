@@ -54,7 +54,7 @@ namespace LogTool
         {
             icon_click_cnt++;
 
-            if (icon_click_cnt > 2)
+            if (icon_click_cnt > 9)
             {
                 if (!is_easter_egg)
                 {
@@ -308,7 +308,7 @@ namespace LogTool
 
         private enum Direction
         {
-            UP = 0,
+            UP,
             DOWN,
             LEFT,
             RIGHT,
@@ -510,7 +510,9 @@ namespace LogTool
             Game2048 game;
             int max_depth;
 
-            public GameAI(Game2048 game2048, int depth = 4)
+            private bool is_running = false;
+
+            public GameAI(Game2048 game2048, int depth = 5)
             {
                 game = game2048;
                 max_depth = depth;
@@ -518,9 +520,19 @@ namespace LogTool
 
             public void Go()
             {
-                var result = Alpha(game, Double.NegativeInfinity, Double.PositiveInfinity);
-                Console.WriteLine("result: " + result.Item2.ToString());
-                game.Move(result.Item2);
+                Thread thread = new Thread(() =>
+                {
+                    if (is_running)
+                    {
+                        return;
+                    }
+                    is_running = true;
+                    var result = Alpha(game, Double.NegativeInfinity, Double.PositiveInfinity);
+                    Console.WriteLine("result: " + result.Item2.ToString());
+                    game.Move(result.Item2);
+                    is_running = false;
+                });
+                thread.Start();
             }
 
             private Tuple<double, Direction> Alpha(Game2048 game2048, double alpha_val, double beta_val, int depth = 0)
@@ -593,11 +605,14 @@ namespace LogTool
             double weight_em = 1;
             double weight_ml = 1;
             double weight_mo = 0;
+            double weight_av = 1;
 
             private double Evaluate(Game2048 game2048)
             {
                 int empty_count = 0;
                 int max_level = 0;
+                int level_sum = 0;
+                int level_num = 0;
                 foreach (List<Card> line in game2048.cards)
                 {
                     foreach (Card card in line)
@@ -605,6 +620,11 @@ namespace LogTool
                         if (card.Number == 0)
                         {
                             empty_count++;
+                        }
+                        else
+                        {
+                            level_sum += card.Level;
+                            level_num++;
                         }
                         if (card.Level > max_level)
                         {
@@ -615,6 +635,7 @@ namespace LogTool
 
                 double em = empty_count * weight_em;
                 double ml = max_level * weight_ml;
+                double av = level_sum / level_num * weight_av;
 
                 int mono = 0;
                 for (int j = 0; j < game2048.size.Y; j++)
@@ -647,7 +668,7 @@ namespace LogTool
 
                 double mo = mono * weight_mo;
 
-                return em + ml + mo;
+                return em + ml + av + mo;
             }
         }
 

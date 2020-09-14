@@ -8,6 +8,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -56,6 +57,7 @@ namespace LogTool
         Mutex buffer_mutex = new Mutex();
         string log_buffer = "";
         string log_file_name = "";
+        static public string log_path = "log";
 
         static string[] log_data_lines;
 
@@ -86,11 +88,6 @@ namespace LogTool
 
             Title = window_title;
 
-            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "log"))
-            {
-                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "log");
-            }
-
             open_state();
 
             string saved_com = ConfigurationManager.AppSettings["selected_com"];
@@ -102,6 +99,27 @@ namespace LogTool
             if (!saved_baud.Equals(""))
             {
                 cb_baud.Text = saved_baud;
+            }
+
+            log_path = ConfigurationManager.AppSettings["log_path"];
+            Create_log_dir(log_path);
+        }
+
+        static public void Create_log_dir(string path)
+        {
+            if (Regex.Match(path, @"^\w:").Success)
+            {
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+            }
+            else
+            {
+                if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + path))
+                {
+                    Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + path);
+                }
             }
         }
 
@@ -446,6 +464,8 @@ namespace LogTool
         private void btn_read_filters_Click(object sender, RoutedEventArgs e)
         {
             FilterUtils.Filter_read(ref filters);
+
+            analys_log_data();
         }
 
         private void edit_filter()
@@ -495,6 +515,8 @@ namespace LogTool
         private void mn_read_filters_Click(object sender, RoutedEventArgs e)
         {
             FilterUtils.Filter_read(ref filters);
+
+            analys_log_data();
         }
 
         private void mn_save_filters_Click(object sender, RoutedEventArgs e)
@@ -857,7 +879,8 @@ namespace LogTool
 
         private void mn_settings_Click(object sender, RoutedEventArgs e)
         {
-            log_add_error("guofan - todo");
+            Settings settings = new Settings(log_path);
+            settings.ShowDialog();
         }
 
         private void mn_help_Click(object sender, RoutedEventArgs e)
