@@ -41,22 +41,32 @@ namespace LogTool
 
         private void btn_log_path_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Title = "选择日志文件位置";
-            saveFileDialog.Filter = "日志文件|*.log;*.txt|所有文件|*.*";
-            saveFileDialog.FileName = "log";
-            saveFileDialog.FilterIndex = 1;
-            saveFileDialog.RestoreDirectory = true;
-            saveFileDialog.DefaultExt = "log";
-            if (saveFileDialog.ShowDialog() == false)
+            //SaveFileDialog saveFileDialog = new SaveFileDialog();
+            //saveFileDialog.Title = "选择日志文件位置";
+            //saveFileDialog.Filter = "日志文件|*.log;*.txt|所有文件|*.*";
+            //saveFileDialog.FileName = "log";
+            //saveFileDialog.FilterIndex = 1;
+            //saveFileDialog.RestoreDirectory = true;
+            //saveFileDialog.DefaultExt = "log";
+            //if (saveFileDialog.ShowDialog() == false)
+            //{
+            //    return;
+            //}
+
+            //string file_path = saveFileDialog.FileName + '\n';
+            //file_path = Regex.Replace(file_path, @"\\\w+?\n", ""); // todo
+
+            //tb_log_path.Text = file_path;
+            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            
+            if (folderBrowserDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
                 return;
             }
 
-            string file_path = saveFileDialog.FileName + '\n';
-            file_path = Regex.Replace(file_path, @"\\\w+?\n", ""); // todo
+            string folder = folderBrowserDialog.SelectedPath;
 
-            tb_log_path.Text = file_path;
+            tb_log_path.Text = folder;
         }
     }
 }

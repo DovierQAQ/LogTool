@@ -102,7 +102,6 @@ namespace LogTool
             }
 
             log_path = ConfigurationManager.AppSettings["log_path"];
-            Create_log_dir(log_path);
         }
 
         static public void Create_log_dir(string path)
@@ -121,6 +120,18 @@ namespace LogTool
                     Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + path);
                 }
             }
+        }
+
+        private string Get_log_path()
+        {
+            if (Regex.Match(log_path, @"^\w:").Success)
+            {
+                return log_path;
+            }
+            else
+            {
+                return AppDomain.CurrentDomain.BaseDirectory + log_path;
+            }    
         }
 
         private void serial_close_callback()
@@ -180,7 +191,8 @@ namespace LogTool
                 {
                     serial.open_serial(cb_com.Text, int.Parse(cb_baud.Text));
                     log_clear();
-                    log_file_name = AppDomain.CurrentDomain.BaseDirectory + "log/" + cb_com.Text + "_" + TimeUtils.GetFileTimeString() + ".log";
+                    Create_log_dir(log_path);
+                    log_file_name = Get_log_path() + "/" + cb_com.Text + "_" + TimeUtils.GetFileTimeString() + ".log";
                 }
                 catch (Exception)
                 {
@@ -911,6 +923,7 @@ namespace LogTool
             configuration.AppSettings.Settings["window_height"].Value = ActualHeight.ToString();
             configuration.AppSettings.Settings["selected_com"].Value = cb_com.Text;
             configuration.AppSettings.Settings["selected_baud"].Value = cb_baud.Text;
+            configuration.AppSettings.Settings["log_path"].Value = log_path;
 
             configuration.Save();
 
