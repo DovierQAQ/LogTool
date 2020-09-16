@@ -563,7 +563,7 @@ namespace LogTool
                 return;
             }
             string file_data = "";
-            using (StreamReader streamReader = new StreamReader(file_name, Encoding.Default))
+            using (StreamReader streamReader = new StreamReader(file_name, Encoding.UTF8))
             {
                 file_data = streamReader.ReadToEnd();
             }
@@ -904,15 +904,6 @@ namespace LogTool
         {
             About about = new About();
             about.Show();
-        }
-
-        private void dg_filter_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            int count_width = 100;
-            if (dg_filter.ActualWidth - count_width > 0)
-            {
-                dgc_filter_text.Width = dg_filter.ActualWidth - count_width;
-            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

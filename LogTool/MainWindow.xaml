@@ -59,9 +59,9 @@
             <TextBox x:Name="tb_recv_data" Height="17" DockPanel.Dock="Bottom" Margin="2" IsReadOnly="True"></TextBox>
             <DataGrid x:Name="dg_log" ItemsSource="{Binding}" IsReadOnly="True" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" 
                       HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas" 
-                      AllowDrop="True" Drop="dg_log_Drop" SelectionChanged="dg_log_SelectionChanged" MouseDoubleClick="dg_log_MouseDoubleClick">
+                      ColumnWidth="*" AllowDrop="True" Drop="dg_log_Drop" SelectionChanged="dg_log_SelectionChanged" MouseDoubleClick="dg_log_MouseDoubleClick">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Width="800">
+                    <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Text}" Foreground="{Binding Foreground}" Background="{Binding Background}"></TextBlock>
@@ -128,10 +128,10 @@
                     </StackPanel>
                     <DataGrid x:Name="dg_filter" ItemsSource="{Binding}" IsReadOnly="True" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" 
                               HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas" 
-                              MouseDoubleClick="dg_filter_MouseDoubleClick" MouseLeftButtonUp="dg_filter_MouseLeftButtonUp" SelectionUnit="Cell" SizeChanged="dg_filter_SizeChanged">
+                              ColumnWidth="*" MouseDoubleClick="dg_filter_MouseDoubleClick" MouseLeftButtonUp="dg_filter_MouseLeftButtonUp" SelectionUnit="Cell">
                         <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Binding="{Binding Is_enable}"></DataGridCheckBoxColumn>
-                            <DataGridTextColumn Binding="{Binding Match_count}"></DataGridTextColumn>
+                            <DataGridCheckBoxColumn Binding="{Binding Is_enable}" Width="20"></DataGridCheckBoxColumn>
+                            <DataGridTextColumn Binding="{Binding Match_count}" Width="40"></DataGridTextColumn>
                             <DataGridTemplateColumn x:Name="dgc_filter_text">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -139,7 +139,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Binding="{Binding State}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding State}" Width="60"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </DockPanel>
