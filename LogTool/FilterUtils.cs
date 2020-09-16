@@ -106,7 +106,20 @@ namespace LogTool
                     }
                     item.Is_case_sensitive = xe.GetAttribute("case_sensitive").ToString().Equals("y");
                     item.Is_regex = xe.GetAttribute("regex").ToString().Equals("y");
-                    filters.Add(item);
+
+                    bool is_match = false;
+                    foreach (var filter in filters)
+                    {
+                        if (filter.Is_case_sensitive == item.Is_case_sensitive && filter.Is_regex == item.Is_regex && filter.Text.Equals(item.Text))
+                        {
+                            is_match = true;
+                            break;
+                        }
+                    }
+                    if (!is_match)
+                    {
+                        filters.Add(item);
+                    }
                 }
             }
             catch (Exception)
