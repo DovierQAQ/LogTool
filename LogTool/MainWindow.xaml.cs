@@ -47,7 +47,8 @@ namespace LogTool
             }
         }
 
-        static string window_title = "GuoFan Log Tool V1.0";
+        static string window_title = "GuoFan Log Tool V1.1";
+        static string release_date = " 2020-11-17";
 
         static GFSerial serial = null;
 
@@ -143,7 +144,7 @@ namespace LogTool
         {
             if (log_data_file_name.Equals(""))
             {
-                Title = window_title;
+                Title = window_title + release_date;
             }
             else
             {

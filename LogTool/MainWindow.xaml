@@ -64,7 +64,7 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Text}" Foreground="{Binding Foreground}" Background="{Binding Background}"></TextBlock>
+                                <TextBlock Text="{Binding Text}" Foreground="{Binding Foreground}" Background="{Binding Background}" TextWrapping="Wrap"></TextBlock>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -130,7 +130,7 @@
                               HorizontalScrollBarVisibility="Auto" HeadersVisibility="None" GridLinesVisibility="None" Background="White" FontFamily="Consolas" 
                               ColumnWidth="*" MouseDoubleClick="dg_filter_MouseDoubleClick" MouseLeftButtonUp="dg_filter_MouseLeftButtonUp" SelectionUnit="Cell">
                         <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Binding="{Binding Is_enable}" Width="20"></DataGridCheckBoxColumn>
+                            <DataGridCheckBoxColumn Binding="{Binding Is_enable}" Width="Auto"></DataGridCheckBoxColumn>
                             <DataGridTextColumn Binding="{Binding Match_count}" Width="40"></DataGridTextColumn>
                             <DataGridTemplateColumn x:Name="dgc_filter_text">
                                 <DataGridTemplateColumn.CellTemplate>

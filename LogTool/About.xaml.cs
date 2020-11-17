@@ -32,7 +32,7 @@ namespace LogTool
             Info_write_line("作者：郭帆");
             Info_write_line("邮箱：guofan2@midea.com");
             Info_write_line("用途：采集串口日志、分析日志");
-            Info_write_line("第一版时间：");
+            Info_write_line("第一版时间：2020-09");
         }
 
         private void Info_write(string content)
