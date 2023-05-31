@@ -1,5 +1,7 @@
 ![](logtool.jpg)
 
+开发经验在博客：https://www.guofan.fun/wpflogtool/
+
 ## 导入、导出过滤器到文件的方式
 
 1.	菜单-文件-导入/导出过滤器
